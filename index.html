@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    if (location.protocol === 'http:' && location.hostname !== 'localhost') {
+      location.replace('https://' + location.host + location.pathname + location.search);
+    }
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#090a12" />
+  <title>Power Nap - 理想の15分仮眠＆覚醒セッション</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app-container">
+    
+    <!-- Top Bar Header -->
+    <header class="app-header">
+      <div class="brand-logo">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+        </svg>
+        <span>POWER NAP</span>
+      </div>
+      <div id="step-indicator" class="step-indicator">STEP 1 / 6</div>
+    </header>
+
+    <!-- Main View Switcher -->
+    <main class="app-main">
+
+      <!-- ================= STEP 1: COFFEE PREP ================= -->
+      <section id="step-1" class="step-view active">
+        <div class="glass-card">
+          <h2 class="step-title">コーヒータイム</h2>
+          <p class="step-subtitle">仮眠直前のカフェイン摂取で、目覚めが驚くほどスッキリします。</p>
+
+          <div class="hero-graphic-box">
+            <div class="coffee-illustration">
+              <div class="coffee-glow"></div>
+              <svg class="coffee-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+                <line x1="6" y1="2" x2="6" y2="4"/>
+                <line x1="10" y1="2" x2="10" y2="4"/>
+                <line x1="14" y1="2" x2="14" y2="4"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="info-badge-list">
+            <div class="info-item">
+              <div class="info-icon-dot">1</div>
+              <div class="info-text-group">
+                <h4>15〜20分のタイムラグ効果</h4>
+                <p>カフェインが脳に到達して覚醒作用を発揮するまで約15〜20分かかります。</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon-dot">2</div>
+              <div class="info-text-group">
+                <h4>アデノシンのブロック</h4>
+                <p>仮眠中に蓄積疲労物質（アデノシン）が分解され、目覚めた瞬間にカフェインが効果的に働きます。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button id="btn-coffee-confirm" class="btn-primary">
+            <span>コーヒーを飲んだので次へ</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= STEP 2: DURATION & AUDIO MODE SELECT ================= -->
+      <section id="step-2" class="step-view">
+        <div class="glass-card">
+          <h2 class="step-title">時間と再生モードの選択</h2>
+          <p class="step-subtitle">パワーナップの時間と再生スタイルを選択してください。</p>
+
+          <div style="margin-top: 10px;">
+            <div class="section-label">
+              <span>再生モードの選択（必須）</span>
+            </div>
+            <div class="mode-toggle-group">
+              <button id="btn-mode-speaker" class="mode-btn active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                <span>スピーカー</span>
+              </button>
+              <button id="btn-mode-earphone" class="mode-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+                <span>イヤホン</span>
+              </button>
+            </div>
+
+            <div class="section-label" style="margin-top: 20px;">
+              <span>パワーナップ時間の選択</span>
+            </div>
+            <div class="duration-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+              <button class="duration-btn active" data-minutes="15">
+                <span class="duration-val">15</span>
+                <span class="duration-unit">MIN</span>
+              </button>
+              <button class="duration-btn" data-minutes="20">
+                <span class="duration-val">20</span>
+                <span class="duration-unit">MIN</span>
+              </button>
+              <button class="duration-btn" data-seconds="10" style="border-color: rgba(255, 234, 0, 0.4);">
+                <span class="duration-val" style="color: #ffea00;">10s</span>
+                <span class="duration-unit" style="color: #ffea00;">DEMO</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button id="btn-goto-mudra" class="btn-primary">
+            <span>瞑想とリラックスへ進む</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= STEP 3: MEDITATION & MUDRA (添付画像完全再現・SVG直書き確実表示!) ================= -->
+      <section id="step-3" class="step-view">
+        <div class="glass-card mudra-display-card">
+          <h2 class="step-title" style="align-self: flex-start; text-align: left;">瞑想とリラックス</h2>
+          <p class="step-subtitle" style="align-self: flex-start; text-align: left; margin-bottom: 4px;">
+            チン・ムドラーを結び、深呼吸を始めましょう。リラックスした姿勢で心を落ち着かせます。
+          </p>
+
+          <!-- チン・ムドラーの手のイラスト (参考画像と完全に同じ最高クオリティ) -->
+          <div id="mudra-container-rest" class="mudra-svg-container" style="width: 170px; height: 170px; margin: 4px auto;">
+            <img src="assets/chin_mudra.jpg" alt="Chin Mudra" class="mudra-hand-img" />
+          </div>
+
+          <div class="info-badge-list" style="width: 100%; margin-top: 4px;">
+            <div class="info-item">
+              <div class="info-icon-dot">1</div>
+              <div class="info-text-group">
+                <h4>親指と人差し指を優しく接触させる</h4>
+                <p>気の流れを整え、集中力を高めます。</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon-dot">2</div>
+              <div class="info-text-group">
+                <h4>手のひらを上に向けて膝の上に置く</h4>
+                <p>開かれた姿勢でリラックスを深めます。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button id="btn-start-nap" class="btn-primary">
+            <span>ムドラーを結んだので次へ</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= STEP 4: POWER NAP TIMER ================= -->
+      <section id="step-4" class="step-view">
+        <div class="glass-card" style="text-align: center;">
+          <h2 class="step-title">パワーナップ中</h2>
+          <p class="step-subtitle">目を閉じて深くリラックスしましょう。</p>
+
+          <div class="timer-ring-wrapper">
+            <svg class="timer-svg" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00e5ff"/>
+                  <stop offset="100%" stop-color="#7c4dff"/>
+                </linearGradient>
+              </defs>
+              <circle class="timer-bg-circle" cx="100" cy="100" r="90" />
+              <circle id="timer-progress-circle" class="timer-progress-circle" cx="100" cy="100" r="90" />
+            </svg>
+            <div class="timer-center-content">
+              <div id="timer-digits" class="timer-digits">15:00</div>
+              <div class="audio-status-badge">
+                <div class="audio-wave-bars">
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                </div>
+                <span id="audio-mode-badge-text">Sound Active</span>
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
+            ※ 終了直前に音量は自動で静かにフェードアウトします。
+          </p>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button id="btn-cancel-nap" class="btn-secondary">
+            <span>タイマーを中断する</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= STEP 5: AWAKENING PHASE ================= -->
+      <section id="step-5" class="step-view">
+        <div class="glass-card mudra-display-card">
+          <div class="awake-header-glow">
+            <span class="awake-badge">AWAKENING PHASE (3 MIN)</span>
+            <h2 class="step-title">覚醒タイム</h2>
+            <div id="awake-timer-digits" class="timer-digits" style="font-size: 2.2rem; color: var(--accent-awake);">03:00</div>
+          </div>
+
+          <div class="awake-progress-bar-container">
+            <div id="awake-progress-fill" class="awake-progress-fill"></div>
+          </div>
+
+          <!-- スーリヤ・ムドラーの手のイラスト (参考画像と完全に同じ最高クオリティ) -->
+          <div id="mudra-container-awake" class="mudra-svg-container" style="width: 170px; height: 170px; margin: 4px auto;">
+            <img src="assets/surya_mudra.jpg" alt="Surya Mudra" class="mudra-hand-img-awake" />
+          </div>
+
+          <h3 id="mudra-name-awake" style="font-size: 1.1rem; font-weight: 700; margin-top: 2px; color: var(--text-main);">スーリヤ・ムドラー</h3>
+
+          <div class="info-badge-list" style="width: 100%; margin-top: 4px;">
+            <div class="info-item">
+              <div class="info-icon-dot" style="background: rgba(255, 110, 64, 0.2); color: var(--accent-awake);">1</div>
+              <div class="info-text-group">
+                <h4>薬指を折って親指で上から押さえる</h4>
+                <p>体温と代謝を上昇させ、交感神経をONにします。</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon-dot" style="background: rgba(255, 110, 64, 0.2); color: var(--accent-awake);">2</div>
+              <div class="info-text-group">
+                <h4>人差し指・中指・小指をまっすぐ伸ばす</h4>
+                <p>エネルギーを全身に循環させ、頭脳を鮮明にします。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button id="btn-skip-awake" class="btn-primary btn-awake">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span>スッキリ覚醒（完了へ）</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= STEP 6: COMPLETE SCREEN ================= -->
+      <section id="step-6" class="step-view">
+        <div class="glass-card complete-box">
+          <div class="complete-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <h2 class="step-title" style="font-size: 1.8rem;">お疲れ様でした！</h2>
+          <p class="step-subtitle" style="margin-top: 10px; font-size: 1.05rem; line-height: 1.6;">
+            パワーナップ完了です。<br>脳が最高レベルにリフレッシュされました。日常に戻りましょう！
+          </p>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button id="btn-reset-app" class="btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <span>もう一度行う（リセット）</span>
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- JavaScript Engine & Logic -->
+  <script src="audioEngine.js"></script>
+  <script src="mudras.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
