@@ -25,12 +25,12 @@
   --text-sub: #9ca3af;
   --text-muted: #6b7280;
 
-  --radius-xl: 20px;
+  --radius-xl: 18px;
   --radius-lg: 14px;
   --radius-md: 10px;
 
   --safe-top: env(safe-area-inset-top, 12px);
-  --safe-bottom: env(safe-area-inset-bottom, 12px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 /* Reset & Global */
@@ -62,7 +62,7 @@ body {
 /* App Wrapper Container (Mobile 100dvh Layout) */
 #app-container {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   height: 100%;
   height: 100dvh;
   max-height: 100dvh;
@@ -70,7 +70,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  padding: calc(var(--safe-top) + 4px) 16px calc(var(--safe-bottom) + 8px) 16px;
+  padding: calc(var(--safe-top) + 2px) 14px calc(var(--safe-bottom) + 10px) 14px;
   overflow: hidden;
 }
 
@@ -79,8 +79,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 34px;
-  margin-bottom: 4px;
+  height: 32px;
+  margin-bottom: 2px;
   flex-shrink: 0;
 }
 
@@ -89,26 +89,26 @@ body {
   align-items: center;
   gap: 6px;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   letter-spacing: 0.05em;
   color: var(--text-main);
 }
 
 .brand-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   color: var(--cyan);
   filter: drop-shadow(0 0 6px var(--cyan-glow));
 }
 
 .step-indicator {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--cyan);
   background: rgba(0, 229, 255, 0.1);
-  padding: 3px 10px;
-  border-radius: 20px;
+  padding: 2px 8px;
+  border-radius: 16px;
   border: 1px solid rgba(0, 229, 255, 0.25);
 }
 
@@ -120,7 +120,6 @@ body {
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-  padding-bottom: 2px;
 }
 
 /* Step Views Animation */
@@ -129,7 +128,7 @@ body {
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
-  animation: fadeIn 0.35s ease-out forwards;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
 .step-view.active {
@@ -139,7 +138,7 @@ body {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.99);
+    transform: translateY(6px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -154,8 +153,8 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--surface-glass-border);
   border-radius: var(--radius-xl);
-  padding: 12px 14px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  padding: 8px 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -164,20 +163,20 @@ body {
 
 /* Headings & Text Formatting */
 .step-title {
-  font-size: 1.28rem;
+  font-size: 1.15rem;
   font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .step-subtitle {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-sub);
-  line-height: 1.3;
-  margin-bottom: 6px;
+  line-height: 1.25;
+  margin-bottom: 4px;
 }
 
 /* Graphic Container (Coffee, Mudra, Timer) */
@@ -185,14 +184,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 4px 0;
+  margin: 2px 0;
   position: relative;
 }
 
 /* Step 1: Coffee Prep */
 .coffee-illustration {
-  width: 90px;
-  height: 90px;
+  width: 75px;
+  height: 75px;
   position: relative;
   display: flex;
   align-items: center;
@@ -201,67 +200,67 @@ body {
 
 .coffee-glow {
   position: absolute;
-  width: 75px;
-  height: 75px;
+  width: 60px;
+  height: 60px;
   background: radial-gradient(circle, rgba(255, 160, 0, 0.3) 0%, rgba(255, 160, 0, 0) 70%);
   border-radius: 50%;
   animation: pulseGlow 3s infinite ease-in-out;
 }
 
 .coffee-icon-svg {
-  width: 55px;
-  height: 55px;
+  width: 45px;
+  height: 45px;
   color: #ffa726;
-  filter: drop-shadow(0 4px 12px rgba(255, 167, 38, 0.4));
+  filter: drop-shadow(0 4px 10px rgba(255, 167, 38, 0.4));
   z-index: 2;
 }
 
 .info-badge-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-top: 4px;
+  gap: 4px;
+  margin-top: 2px;
   width: 100%;
 }
 
 .info-item {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.03);
-  padding: 6px 10px;
+  padding: 4px 8px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.06);
   text-align: left;
 }
 
 .info-icon-dot {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: rgba(0, 229, 255, 0.15);
   color: var(--cyan);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
 }
 
 .info-text-group h4 {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-main);
-  margin-bottom: 1px;
-  line-height: 1.2;
+  margin-bottom: 0px;
+  line-height: 1.15;
 }
 
 .info-text-group p {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-sub);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 /* Step 2: Mudra & Mode Select */
@@ -273,58 +272,58 @@ body {
 }
 
 .mudra-svg-container {
-  width: 105px;
-  height: 105px;
+  width: 80px;
+  height: 80px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 2px auto !important;
+  margin: 1px auto !important;
   flex-shrink: 0;
 }
 
 .mudra-hand-img,
 .mudra-hand-img-awake {
-  width: 100px;
-  height: 100px;
+  width: 75px;
+  height: 75px;
   object-fit: contain;
-  border-radius: 12px;
+  border-radius: 10px;
   mix-blend-mode: lighten;
-  filter: drop-shadow(0 0 10px rgba(255, 167, 38, 0.6));
+  filter: drop-shadow(0 0 8px rgba(255, 167, 38, 0.6));
   animation: pulseGlow 3s infinite ease-in-out;
 }
 
 .mudra-hand-img-awake {
-  filter: drop-shadow(0 0 10px rgba(255, 110, 64, 0.6));
+  filter: drop-shadow(0 0 8px rgba(255, 110, 64, 0.6));
 }
 
 @keyframes pulseGlow {
   0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.04); opacity: 1; }
+  50% { transform: scale(1.03); opacity: 1; }
 }
 
 .mudra-name-title {
-  font-size: 1rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--gold);
-  margin: 2px 0 4px 0;
-  text-shadow: 0 0 8px rgba(255, 234, 0, 0.3);
+  margin: 1px 0 2px 0;
+  text-shadow: 0 0 6px rgba(255, 234, 0, 0.3);
 }
 
 /* Mode Selection Toggle Buttons */
 .section-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--text-sub);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-transform: uppercase;
 }
 
 .mode-toggle-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
@@ -332,13 +331,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--surface-glass-border);
   border-radius: var(--radius-lg);
-  padding: 8px 10px;
+  padding: 6px 8px;
   color: var(--text-sub);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -348,19 +347,19 @@ body {
   background: rgba(0, 229, 255, 0.12);
   border-color: var(--cyan);
   color: var(--cyan);
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
 }
 
 .mode-btn svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Duration Grid */
 .duration-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
@@ -368,7 +367,7 @@ body {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--surface-glass-border);
   border-radius: var(--radius-lg);
-  padding: 8px 10px;
+  padding: 6px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -380,11 +379,11 @@ body {
 .duration-btn.active {
   background: rgba(124, 77, 255, 0.15);
   border-color: var(--primary);
-  box-shadow: 0 0 12px rgba(124, 77, 255, 0.3);
+  box-shadow: 0 0 10px rgba(124, 77, 255, 0.3);
 }
 
 .duration-val {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-main);
   line-height: 1.1;
@@ -395,7 +394,7 @@ body {
 }
 
 .duration-unit {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-sub);
   margin-top: 1px;
@@ -404,9 +403,9 @@ body {
 /* Step 4: Power Nap Timer */
 .timer-ring-wrapper {
   position: relative;
-  width: 150px;
-  height: 150px;
-  margin: 4px auto;
+  width: 130px;
+  height: 130px;
+  margin: 2px auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -432,7 +431,7 @@ body {
   stroke-dasharray: 439.82;
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 1s linear;
-  filter: drop-shadow(0 0 8px var(--cyan-glow));
+  filter: drop-shadow(0 0 6px var(--cyan-glow));
 }
 
 .timer-center-content {
@@ -445,7 +444,7 @@ body {
 
 .timer-digits {
   font-family: "Outfit", sans-serif;
-  font-size: 2.5rem;
+  font-size: 2.1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-main);
@@ -455,13 +454,13 @@ body {
 .audio-status-badge {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: rgba(0, 229, 255, 0.1);
   border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 12px;
-  padding: 3px 8px;
-  margin-top: 4px;
-  font-size: 0.68rem;
+  border-radius: 10px;
+  padding: 2px 6px;
+  margin-top: 2px;
+  font-size: 0.65rem;
   color: var(--cyan);
 }
 
@@ -497,24 +496,24 @@ body {
 }
 
 .awake-badge {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--accent-awake);
   background: rgba(255, 110, 64, 0.12);
   border: 1px solid rgba(255, 110, 64, 0.3);
-  padding: 3px 10px;
-  border-radius: 16px;
-  margin-bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-bottom: 2px;
 }
 
 .awake-progress-bar-container {
   width: 100%;
-  height: 6px;
+  height: 5px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 3px;
   overflow: hidden;
-  margin: 4px 0 6px 0;
+  margin: 3px 0 4px 0;
 }
 
 .awake-progress-fill {
@@ -522,52 +521,57 @@ body {
   width: 0%;
   background: linear-gradient(90deg, #ffab40 0%, #ff5252 100%);
   transition: width 1s linear;
-  box-shadow: 0 0 10px rgba(255, 82, 82, 0.6);
+  box-shadow: 0 0 8px rgba(255, 82, 82, 0.6);
 }
 
 /* Step 7: Completion Screen */
 .completion-icon-box {
-  width: 65px;
-  height: 65px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   background: rgba(0, 229, 255, 0.12);
   border: 2px solid var(--cyan);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 6px auto 10px auto;
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  margin: 4px auto 8px auto;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);
 }
 
 .completion-icon-svg {
-  width: 35px;
-  height: 35px;
+  width: 28px;
+  height: 28px;
   color: var(--cyan);
 }
 
-/* Action Buttons */
+/* Action Buttons Container (Safely positioned above iOS bottom bar) */
 .btn-container {
-  margin-top: 8px;
+  margin-top: 6px;
+  margin-bottom: calc(var(--safe-bottom) + 10px);
   flex-shrink: 0;
   width: 100%;
+  z-index: 100;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-primary-awake,
+.btn-secondary {
   width: 100%;
-  padding: 11px 16px;
-  font-size: 0.9rem;
+  min-height: 46px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(135deg, #7c4dff 0%, #651fff 100%);
-  border: none;
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(124, 77, 255, 0.35);
   transition: all 0.2s ease;
+  border: none;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(124, 77, 255, 0.35);
 }
 
 .btn-primary:active {
@@ -575,21 +579,9 @@ body {
 }
 
 .btn-primary-awake {
-  width: 100%;
-  padding: 11px 16px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #ffffff;
   background: linear-gradient(135deg, #ff6e40 0%, #ff3d00 100%);
-  border: none;
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(255, 110, 64, 0.4);
-  transition: all 0.2s ease;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(255, 110, 64, 0.4);
 }
 
 .btn-primary-awake:active {
@@ -597,20 +589,11 @@ body {
 }
 
 .btn-secondary {
-  width: 100%;
-  padding: 10px 16px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-sub);
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--surface-glass-border);
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .btn-secondary:active {
