@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------------- */
-/* PowerNap App - CSS Style Sheet (Mobile First & Modern Premium UI)        */
+/* PowerNap App - CSS Style Sheet (Rich Premium Modern Aesthetic UI)         */
 /* -------------------------------------------------------------------------- */
 
 :root {
@@ -7,7 +7,7 @@
 
   /* Colors */
   --bg-dark: #090a12;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #1a1c38 0%, #090a12 80%);
+  --bg-gradient: radial-gradient(circle at 50% 20%, #1c1e3d 0%, #090a12 85%);
   --surface-glass: rgba(255, 255, 255, 0.05);
   --surface-glass-border: rgba(255, 255, 255, 0.12);
   --surface-glass-active: rgba(255, 255, 255, 0.10);
@@ -25,12 +25,12 @@
   --text-sub: #9ca3af;
   --text-muted: #6b7280;
 
-  --radius-xl: 18px;
-  --radius-lg: 14px;
-  --radius-md: 10px;
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
 
   --safe-top: env(safe-area-inset-top, 12px);
-  --safe-bottom: env(safe-area-inset-bottom, 20px);
+  --safe-bottom: env(safe-area-inset-bottom, 16px);
 }
 
 /* Reset & Global */
@@ -62,7 +62,7 @@ body {
 /* App Wrapper Container (Mobile 100dvh Layout) */
 #app-container {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   height: 100%;
   height: 100dvh;
   max-height: 100dvh;
@@ -70,7 +70,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  padding: calc(var(--safe-top) + 2px) 14px calc(var(--safe-bottom) + 10px) 14px;
+  padding: calc(var(--safe-top) + 4px) 16px calc(var(--safe-bottom) + 8px) 16px;
   overflow: hidden;
 }
 
@@ -79,36 +79,36 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 32px;
-  margin-bottom: 2px;
+  height: 38px;
+  margin-bottom: 4px;
   flex-shrink: 0;
 }
 
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   letter-spacing: 0.05em;
   color: var(--text-main);
 }
 
 .brand-icon {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   color: var(--cyan);
-  filter: drop-shadow(0 0 6px var(--cyan-glow));
+  filter: drop-shadow(0 0 8px var(--cyan-glow));
 }
 
 .step-indicator {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--cyan);
   background: rgba(0, 229, 255, 0.1);
-  padding: 2px 8px;
-  border-radius: 16px;
+  padding: 3px 12px;
+  border-radius: 20px;
   border: 1px solid rgba(0, 229, 255, 0.25);
 }
 
@@ -128,7 +128,7 @@ body {
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.35s ease-out forwards;
 }
 
 .step-view.active {
@@ -138,7 +138,7 @@ body {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px) scale(0.99);
+    transform: translateY(8px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -146,37 +146,40 @@ body {
   }
 }
 
-/* Cards & Glassmorphism (100dvh Fit) */
+/* Cards & Glassmorphism (Balanced Rich Aesthetic) */
 .glass-card {
+  flex: 1;
   background: var(--surface-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--surface-glass-border);
   border-radius: var(--radius-xl);
-  padding: 8px 12px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  padding: 14px 16px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
   align-items: center;
   text-align: center;
+  overflow: hidden;
 }
 
 /* Headings & Text Formatting */
 .step-title {
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 1px;
+  line-height: 1.25;
+  margin-bottom: 2px;
   background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .step-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   color: var(--text-sub);
-  line-height: 1.25;
-  margin-bottom: 4px;
+  line-height: 1.3;
+  margin-bottom: 6px;
 }
 
 /* Graphic Container (Coffee, Mudra, Timer) */
@@ -184,14 +187,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 2px 0;
+  margin: 4px 0;
   position: relative;
 }
 
 /* Step 1: Coffee Prep */
 .coffee-illustration {
-  width: 75px;
-  height: 75px;
+  width: 95px;
+  height: 95px;
   position: relative;
   display: flex;
   align-items: center;
@@ -200,67 +203,67 @@ body {
 
 .coffee-glow {
   position: absolute;
-  width: 60px;
-  height: 60px;
-  background: radial-gradient(circle, rgba(255, 160, 0, 0.3) 0%, rgba(255, 160, 0, 0) 70%);
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(255, 160, 0, 0.35) 0%, rgba(255, 160, 0, 0) 70%);
   border-radius: 50%;
   animation: pulseGlow 3s infinite ease-in-out;
 }
 
 .coffee-icon-svg {
-  width: 45px;
-  height: 45px;
+  width: 58px;
+  height: 58px;
   color: #ffa726;
-  filter: drop-shadow(0 4px 10px rgba(255, 167, 38, 0.4));
+  filter: drop-shadow(0 4px 14px rgba(255, 167, 38, 0.5));
   z-index: 2;
 }
 
 .info-badge-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 2px;
+  gap: 6px;
+  margin-top: 4px;
   width: 100%;
 }
 
 .info-item {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
   background: rgba(255, 255, 255, 0.03);
-  padding: 4px 8px;
-  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.06);
   text-align: left;
 }
 
 .info-icon-dot {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: rgba(0, 229, 255, 0.15);
   color: var(--cyan);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
 }
 
 .info-text-group h4 {
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-main);
-  margin-bottom: 0px;
-  line-height: 1.15;
+  margin-bottom: 1px;
+  line-height: 1.2;
 }
 
 .info-text-group p {
-  font-size: 0.68rem;
+  font-size: 0.74rem;
   color: var(--text-sub);
-  line-height: 1.15;
+  line-height: 1.25;
 }
 
 /* Step 2: Mudra & Mode Select */
@@ -272,58 +275,58 @@ body {
 }
 
 .mudra-svg-container {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1px auto !important;
+  margin: 4px auto !important;
   flex-shrink: 0;
 }
 
 .mudra-hand-img,
 .mudra-hand-img-awake {
-  width: 75px;
-  height: 75px;
+  width: 115px;
+  height: 115px;
   object-fit: contain;
-  border-radius: 10px;
+  border-radius: 14px;
   mix-blend-mode: lighten;
-  filter: drop-shadow(0 0 8px rgba(255, 167, 38, 0.6));
+  filter: drop-shadow(0 0 12px rgba(255, 167, 38, 0.6));
   animation: pulseGlow 3s infinite ease-in-out;
 }
 
 .mudra-hand-img-awake {
-  filter: drop-shadow(0 0 8px rgba(255, 110, 64, 0.6));
+  filter: drop-shadow(0 0 12px rgba(255, 110, 64, 0.6));
 }
 
 @keyframes pulseGlow {
   0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.03); opacity: 1; }
+  50% { transform: scale(1.04); opacity: 1; }
 }
 
 .mudra-name-title {
-  font-size: 0.88rem;
+  font-size: 0.98rem;
   font-weight: 700;
   color: var(--gold);
-  margin: 1px 0 2px 0;
-  text-shadow: 0 0 6px rgba(255, 234, 0, 0.3);
+  margin: 2px 0 4px 0;
+  text-shadow: 0 0 8px rgba(255, 234, 0, 0.35);
 }
 
 /* Mode Selection Toggle Buttons */
 .section-label {
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--text-sub);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   text-transform: uppercase;
 }
 
 .mode-toggle-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
 }
 
@@ -331,13 +334,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--surface-glass-border);
   border-radius: var(--radius-lg);
-  padding: 6px 8px;
+  padding: 8px 10px;
   color: var(--text-sub);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -347,19 +350,19 @@ body {
   background: rgba(0, 229, 255, 0.12);
   border-color: var(--cyan);
   color: var(--cyan);
-  box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
 }
 
 .mode-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Duration Grid */
 .duration-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
 }
 
@@ -367,7 +370,7 @@ body {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--surface-glass-border);
   border-radius: var(--radius-lg);
-  padding: 6px 8px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -379,11 +382,11 @@ body {
 .duration-btn.active {
   background: rgba(124, 77, 255, 0.15);
   border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(124, 77, 255, 0.3);
+  box-shadow: 0 0 12px rgba(124, 77, 255, 0.3);
 }
 
 .duration-val {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-main);
   line-height: 1.1;
@@ -394,21 +397,22 @@ body {
 }
 
 .duration-unit {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: var(--text-sub);
   margin-top: 1px;
 }
 
-/* Step 4: Power Nap Timer */
+/* Step 4: Power Nap Timer (190px Circle Ring so Badge Fits Inside Perfect) */
 .timer-ring-wrapper {
   position: relative;
-  width: 130px;
-  height: 130px;
-  margin: 2px auto;
+  width: 190px;
+  height: 190px;
+  margin: 6px auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .timer-svg {
@@ -428,10 +432,10 @@ body {
   stroke: url(#timerGradient);
   stroke-width: 8;
   stroke-linecap: round;
-  stroke-dasharray: 439.82;
+  stroke-dasharray: 534.07;
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 1s linear;
-  filter: drop-shadow(0 0 6px var(--cyan-glow));
+  filter: drop-shadow(0 0 10px var(--cyan-glow));
 }
 
 .timer-center-content {
@@ -440,11 +444,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  padding: 0 12px;
 }
 
 .timer-digits {
   font-family: "Outfit", sans-serif;
-  font-size: 2.1rem;
+  font-size: 2.6rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-main);
@@ -454,21 +460,25 @@ body {
 .audio-status-badge {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: rgba(0, 229, 255, 0.1);
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 10px;
-  padding: 2px 6px;
-  margin-top: 2px;
-  font-size: 0.65rem;
+  justify-content: center;
+  gap: 5px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 12px;
+  padding: 3px 8px;
+  margin-top: 6px;
+  font-size: 0.68rem;
   color: var(--cyan);
+  max-width: 90%;
+  white-space: nowrap;
 }
 
 .audio-wave-bars {
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  height: 8px;
+  height: 9px;
+  flex-shrink: 0;
 }
 
 .wave-bar {
@@ -496,24 +506,24 @@ body {
 }
 
 .awake-badge {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--accent-awake);
   background: rgba(255, 110, 64, 0.12);
   border: 1px solid rgba(255, 110, 64, 0.3);
-  padding: 2px 8px;
-  border-radius: 12px;
-  margin-bottom: 2px;
+  padding: 3px 10px;
+  border-radius: 16px;
+  margin-bottom: 4px;
 }
 
 .awake-progress-bar-container {
   width: 100%;
-  height: 5px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 3px;
   overflow: hidden;
-  margin: 3px 0 4px 0;
+  margin: 4px 0 6px 0;
 }
 
 .awake-progress-fill {
@@ -521,57 +531,54 @@ body {
   width: 0%;
   background: linear-gradient(90deg, #ffab40 0%, #ff5252 100%);
   transition: width 1s linear;
-  box-shadow: 0 0 8px rgba(255, 82, 82, 0.6);
+  box-shadow: 0 0 10px rgba(255, 82, 82, 0.6);
 }
 
 /* Step 7: Completion Screen */
 .completion-icon-box {
-  width: 55px;
-  height: 55px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   background: rgba(0, 229, 255, 0.12);
   border: 2px solid var(--cyan);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 4px auto 8px auto;
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);
+  margin: 6px auto 10px auto;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
 }
 
 .completion-icon-svg {
-  width: 28px;
-  height: 28px;
+  width: 35px;
+  height: 35px;
   color: var(--cyan);
 }
 
-/* Action Buttons Container (Safely positioned above iOS bottom bar) */
+/* Rich Action Buttons Container */
 .btn-container {
-  margin-top: 6px;
-  margin-bottom: calc(var(--safe-bottom) + 10px);
+  margin-top: 10px;
+  margin-bottom: calc(var(--safe-bottom) + 4px);
   flex-shrink: 0;
   width: 100%;
-  z-index: 100;
 }
 
-.btn-primary,
-.btn-primary-awake,
-.btn-secondary {
+.btn-primary {
   width: 100%;
-  min-height: 46px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
+  padding: 13px 20px;
+  font-size: 0.92rem;
   font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c4dff 0%, #651fff 100%);
+  border: none;
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   cursor: pointer;
+  box-shadow: 0 8px 24px rgba(124, 77, 255, 0.4);
   transition: all 0.2s ease;
-  border: none;
-  line-height: 1.25;
-  text-align: center;
-  box-shadow: 0 4px 16px rgba(124, 77, 255, 0.35);
+  line-height: 1.2;
 }
 
 .btn-primary:active {
@@ -579,9 +586,22 @@ body {
 }
 
 .btn-primary-awake {
-  background: linear-gradient(135deg, #ff6e40 0%, #ff3d00 100%);
+  width: 100%;
+  padding: 13px 20px;
+  font-size: 0.92rem;
+  font-weight: 700;
   color: #ffffff;
-  box-shadow: 0 4px 16px rgba(255, 110, 64, 0.4);
+  background: linear-gradient(135deg, #ff6e40 0%, #ff3d00 100%);
+  border: none;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255, 110, 64, 0.45);
+  transition: all 0.2s ease;
+  line-height: 1.2;
 }
 
 .btn-primary-awake:active {
@@ -589,13 +609,22 @@ body {
 }
 
 .btn-secondary {
-  font-size: 0.8rem;
+  width: 100%;
+  padding: 11px 18px;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-sub);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-secondary:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
 }

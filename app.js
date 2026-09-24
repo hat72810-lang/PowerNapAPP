@@ -169,8 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
       audioModeBadgeText.textContent = audioMode === "speaker" ? "528Hz + 4Hz 揺らぎ再生中" : "200/204Hz バイノーラル再生中";
     }
     
-    // Circle Stroke Init (Radius 70 => Circumference = 439.82)
-    const circumference = 439.82;
+    // Circle Stroke Init (Radius 85 => Circumference = 534.07)
+    const circumference = 534.07;
     if (timerProgressCircle) {
       timerProgressCircle.style.strokeDasharray = `${circumference}`;
       timerProgressCircle.style.strokeDashoffset = `0`;
