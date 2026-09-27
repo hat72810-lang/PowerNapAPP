@@ -248,28 +248,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Step 4 Complete -> Alarm (3 times) -> Auto Move to Step 5 ---
+  // --- Step 4 Complete -> Alarm (3 times) -> ALL-AUTO Move to Step 6 (Awakening Phase) ---
   function onNapTimerComplete() {
     if (timerDigitsEl) timerDigitsEl.style.color = "#ff1744";
     if (audioModeBadgeText) {
-      audioModeBadgeText.textContent = "目覚ましアラーム鳴動中 ⏰（自動で次へ）";
+      audioModeBadgeText.textContent = "目覚ましアラーム鳴動中 ⏰（全自動で覚醒へ）";
       audioModeBadgeText.style.color = "#ff1744";
       audioModeBadgeText.style.background = "rgba(255, 23, 68, 0.2)";
     }
     
-    // アラームを3回鳴らしたあと、自動的にSTEP 5へ移動
+    // アラームを3回鳴らしたあと、ボタンを押さずに自動的に覚醒タイム（STEP 6）を開始！
     if (window.powerNapAudio) {
       window.powerNapAudio.startAlarmLimited(3, () => {
         if (currentStep === 4) {
-          goToStep(5);
+          startAwakeningPhase(); // ボタンなしで全自動覚醒モードへ直行！
         }
       });
     } else {
-      setTimeout(() => { if (currentStep === 4) goToStep(5); }, 3500);
+      setTimeout(() => { if (currentStep === 4) startAwakeningPhase(); }, 3500);
     }
     
     if (btnCancelNap) {
-      btnCancelNap.textContent = "覚醒準備へスキップ ➔";
+      btnCancelNap.textContent = "即座に覚醒タイム（3分）をスタート ➔";
       btnCancelNap.className = "btn-primary";
       btnCancelNap.style.background = "linear-gradient(135deg, #ff5252 0%, #ff1744 100%)";
       
@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnCancelNap.parentNode.replaceChild(newBtn, btnCancelNap);
       newBtn.addEventListener("click", () => {
         if (window.powerNapAudio) window.powerNapAudio.stop();
-        goToStep(5); // 覚醒準備画面(STEP 5)へ手動スキップ
+        startAwakeningPhase(); // 手動で即座に覚醒モード開始
       });
     }
   }
