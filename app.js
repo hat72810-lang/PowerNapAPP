@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function onNapTimerComplete() {
     if (timerDigitsEl) timerDigitsEl.style.color = "#ff1744";
     if (audioModeBadgeText) {
-      audioModeBadgeText.textContent = "目覚ましアラーム鳴動中 ⏰（全自動で覚醒へ）";
+      audioModeBadgeText.textContent = "目覚ましアラーム鳴動中 ⏰";
       audioModeBadgeText.style.color = "#ff1744";
       audioModeBadgeText.style.background = "rgba(255, 23, 68, 0.2)";
     }
