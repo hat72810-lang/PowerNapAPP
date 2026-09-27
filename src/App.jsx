@@ -80,9 +80,9 @@ export default function App() {
           if (prev <= 1) {
             clearInterval(timerRef.current);
             setIsRestFinished(true);
-            // アラームを3回鳴らしたあと、自動的にSTEP 5へ移動
+            // アラームを3回鳴らしたあと、ボタンを押さずに自動的に覚醒タイム（3分）を開始！
             audioEngine.startAlarmLimited(3, () => {
-              setStep((currentStep) => currentStep === 4 ? 5 : currentStep);
+              handleStartAwake();
             });
             return 0;
           }
@@ -341,6 +341,10 @@ export default function App() {
               <p className="step-subtitle">
                 {isRestFinished ? 'ボタンをタップしてアラームを止め、覚醒の準備へ進みましょう。' : '目を閉じて深くリラックスしましょう。'}
               </p>
+
+              <div className="mudra-svg-container" style={{ width: '100px', height: '100px', margin: '2px auto' }}>
+                <RestMudraSVG />
+              </div>
 
               <div className="timer-ring-wrapper">
                 <svg className="timer-svg" viewBox="0 0 200 200">
