@@ -116,14 +116,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Step 1 Auto Start Listeners ---
   const autoStartBtns = document.querySelectorAll(".btn-auto-start");
   autoStartBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const secAttr = btn.getAttribute("data-auto-seconds");
-      const minAttr = btn.getAttribute("data-auto-minutes");
+    btn.addEventListener("click", (e) => {
+      const targetBtn = e.currentTarget;
+      const secAttr = targetBtn.getAttribute("data-auto-seconds");
+      const minAttr = targetBtn.getAttribute("data-auto-minutes");
+      
       if (secAttr) {
         restDurationSeconds = parseInt(secAttr, 10);
       } else if (minAttr) {
         restDurationSeconds = parseInt(minAttr, 10) * 60;
+      } else {
+        restDurationSeconds = 15 * 60; // fallback 15m
       }
+
+      // Audio Engine Unlock & Init
+      if (window.powerNapAudio && typeof window.powerNapAudio.init === 'function') {
+        try {
+          window.powerNapAudio.init();
+        } catch (err) {
+          console.warn("Audio init warning:", err);
+        }
+      }
+
       startPowerNapTimer();
     });
   });

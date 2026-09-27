@@ -218,14 +218,17 @@ body {
   z-index: 2;
 }
 
-/* Auto Start Section */
+/* Auto Start Section - Ultra Premium Glass Style */
 .auto-start-section {
   width: 100%;
-  margin: 6px 0;
-  padding: 8px 10px;
-  background: rgba(124, 77, 255, 0.06);
+  margin: 10px 0 6px 0;
+  padding: 10px 12px;
+  background: rgba(15, 23, 42, 0.65);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(124, 77, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .auto-start-header {
@@ -233,18 +236,23 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #e0e7ff;
-  margin-bottom: 6px;
-  letter-spacing: 0.02em;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
 }
 
-.auto-icon {
-  width: 16px;
-  height: 16px;
-  color: #ffea00;
-  filter: drop-shadow(0 0 6px rgba(255, 234, 0, 0.6));
+.auto-icon-fixed {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  filter: drop-shadow(0 0 6px rgba(255, 234, 0, 0.7));
 }
 
 .auto-start-grid {
@@ -255,65 +263,94 @@ body {
 }
 
 .btn-auto-start {
+  appearance: none;
+  -webkit-appearance: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 7px 2px;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-main);
+  padding: 8px 2px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   outline: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.btn-auto-start:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .btn-auto-start:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
 .btn-auto-start .auto-time {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.1;
   color: #ffffff;
 }
 
 .btn-auto-start .auto-tag {
   font-size: 0.62rem;
-  color: var(--text-sub);
-  margin-top: 2px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-top: 3px;
+  letter-spacing: 0.02em;
 }
 
+/* 10s Demo Button Style */
 .btn-auto-start.demo {
-  background: rgba(255, 234, 0, 0.08);
-  border: 1px solid rgba(255, 234, 0, 0.35);
+  background: linear-gradient(135deg, rgba(255, 214, 0, 0.18) 0%, rgba(255, 152, 0, 0.15) 100%);
+  border: 1px solid rgba(255, 214, 0, 0.5);
+  box-shadow: 0 0 10px rgba(255, 214, 0, 0.15);
 }
-
 .btn-auto-start.demo .auto-time {
   color: #ffea00;
+  text-shadow: 0 0 8px rgba(255, 234, 0, 0.5);
 }
-
 .btn-auto-start.demo .auto-tag {
-  color: #ffd54f;
-  font-weight: 600;
+  color: #ffe082;
 }
 
+/* 10m Quick Button Style */
+.btn-auto-start[data-auto-minutes="10"] {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(3, 169, 244, 0.12) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+}
+.btn-auto-start[data-auto-minutes="10"] .auto-time {
+  color: #80d8ff;
+}
+
+/* 15m Featured Button Style */
 .btn-auto-start.featured {
-  background: linear-gradient(135deg, rgba(124, 77, 255, 0.35) 0%, rgba(0, 229, 255, 0.35) 100%);
-  border: 1px solid var(--cyan);
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.45) 0%, rgba(0, 229, 255, 0.4) 100%);
+  border: 1px solid #00e5ff;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
 }
-
 .btn-auto-start.featured .auto-time {
   color: #ffffff;
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+}
+.btn-auto-start.featured .auto-tag {
+  color: #e0f7fa;
+  font-weight: 700;
 }
 
-.btn-auto-start.featured .auto-tag {
-  color: var(--cyan);
-  font-weight: 600;
+/* 20m Deep Button Style */
+.btn-auto-start[data-auto-minutes="20"] {
+  background: linear-gradient(135deg, rgba(255, 110, 64, 0.18) 0%, rgba(255, 82, 82, 0.15) 100%);
+  border: 1px solid rgba(255, 110, 64, 0.4);
+}
+.btn-auto-start[data-auto-minutes="20"] .auto-time {
+  color: #ff9e80;
 }
 
 .btn-guide {
