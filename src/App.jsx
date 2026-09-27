@@ -58,6 +58,15 @@ export default function App() {
     setStep(4);
   };
 
+  // One-Tap Auto Start Nap (Step 1 -> 4)
+  const handleAutoStartNap = (secs) => {
+    setDurationSeconds(secs);
+    setRemainingRest(secs);
+    setIsRestFinished(false);
+    audioEngine.startRestSound(audioMode);
+    setStep(4);
+  };
+
   // Rest Timer Effect
   useEffect(() => {
     if (step === 4 && !isRestFinished) {
@@ -71,7 +80,10 @@ export default function App() {
           if (prev <= 1) {
             clearInterval(timerRef.current);
             setIsRestFinished(true);
-            audioEngine.startAlarmLoop(); // ボタンを押すまで繰り返し目覚まし音
+            // アラームを3回鳴らしたあと、自動的にSTEP 5へ移動
+            audioEngine.startAlarmLimited(3, () => {
+              setStep((currentStep) => currentStep === 4 ? 5 : currentStep);
+            });
             return 0;
           }
           return prev - 1;
@@ -89,7 +101,7 @@ export default function App() {
   const handleConfirmRestFinished = () => {
     audioEngine.stop();
     setIsRestFinished(false);
-    handleStartAwake();
+    setStep(5);
   };
 
   // Start Awakening Phase (Step 5 -> 6)
@@ -167,31 +179,50 @@ export default function App() {
               <div className="hero-graphic-box">
                 <div className="coffee-illustration">
                   <div className="coffee-glow"></div>
-                  <Coffee className="coffee-icon-svg" style={{ color: '#ffa726', width: '80px', height: '80px' }} />
+                  <Coffee className="coffee-icon-svg" style={{ color: '#ffa726', width: '48px', height: '48px' }} />
+                </div>
+              </div>
+
+              {/* ⚡️ ワンタップ・オートスタート セクション */}
+              <div className="auto-start-section">
+                <div className="auto-start-header">
+                  <Zap size={16} style={{ color: '#ffea00' }} />
+                  <span>⚡️ ワンタップ・オートスタート</span>
+                </div>
+                <div className="auto-start-grid">
+                  <button onClick={() => handleAutoStartNap(10)} className="btn-auto-start demo">
+                    <span className="auto-time">10秒</span>
+                    <span className="auto-tag">デモ</span>
+                  </button>
+                  <button onClick={() => handleAutoStartNap(10 * 60)} className="btn-auto-start">
+                    <span className="auto-time">10分</span>
+                    <span className="auto-tag">クイック</span>
+                  </button>
+                  <button onClick={() => handleAutoStartNap(15 * 60)} className="btn-auto-start featured">
+                    <span className="auto-time">15分</span>
+                    <span className="auto-tag">おすすめ</span>
+                  </button>
+                  <button onClick={() => handleAutoStartNap(20 * 60)} className="btn-auto-start">
+                    <span className="auto-time">20分</span>
+                    <span className="auto-tag">じっくり</span>
+                  </button>
                 </div>
               </div>
 
               <div className="info-badge-list">
                 <div className="info-item">
-                  <div className="info-icon-dot">1</div>
+                  <div className="info-icon-dot">💡</div>
                   <div className="info-text-group">
-                    <h4>15〜20分のタイムラグ効果</h4>
-                    <p>カフェインが脳に到達して覚醒作用を発揮するまで約15〜20分かかります。</p>
-                  </div>
-                </div>
-                <div className="info-item">
-                  <div className="info-icon-dot">2</div>
-                  <div className="info-text-group">
-                    <h4>アデノシンのブロック</h4>
-                    <p>仮眠中に蓄積疲労物質（アデノシン）が分解され、目覚めた瞬間にカフェインが効果的に働きます。</p>
+                    <h4>カフェイン × 仮眠の相乗効果</h4>
+                    <p>仮眠中に疲労物質が分解され、目覚めた瞬間にカフェインが効果的に働きます。</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <button onClick={() => setStep(2)} className="btn-primary" style={{ marginTop: '20px' }}>
-              <span>コーヒーを飲んだので次へ</span>
-              <ArrowRight size={20} />
+            <button onClick={() => setStep(2)} className="btn-primary btn-guide" style={{ marginTop: '12px' }}>
+              <span>ガイド付きで進む（カフェイン摂取➔詳細設定）</span>
+              <ArrowRight size={18} />
             </button>
           </div>
         )}
@@ -223,7 +254,14 @@ export default function App() {
                 </div>
 
                 <div className="section-label" style={{ marginTop: '20px' }}>パワーナップ時間の選択</div>
-                <div className="duration-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                <div className="duration-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+                  <button
+                    className={`duration-btn ${durationSeconds === 10 * 60 ? 'active' : ''}`}
+                    onClick={() => setDurationSeconds(10 * 60)}
+                  >
+                    <span className="duration-val">10</span>
+                    <span className="duration-unit">MIN</span>
+                  </button>
                   <button
                     className={`duration-btn ${durationSeconds === 15 * 60 ? 'active' : ''}`}
                     onClick={() => setDurationSeconds(15 * 60)}
@@ -347,53 +385,53 @@ export default function App() {
           </div>
         )}
 
-        {/* STEP 5 (新): スーリヤ・ムドラー準備画面 */}
+        {/* STEP 5: スーリヤ・ムドラー準備画面 */}
         {step === 5 && (
           <div className="step-view active">
-            <div className="glass-card mudra-display-card">
-              <span className="awake-badge">AWAKENING PREP</span>
-              <h2 className="step-title" style={{ alignSelf: 'flex-start', textAlign: 'left', marginTop: '4px' }}>覚醒の準備（スーリヤ・ムドラー）</h2>
-              <p className="step-subtitle" style={{ alignSelf: 'flex-start', textAlign: 'left', marginBottom: '8px' }}>
+            <div className="glass-card mudra-display-card" style={{ padding: '14px 12px' }}>
+              <span className="awake-badge" style={{ marginBottom: '4px' }}>AWAKENING PREP</span>
+              <h2 className="step-title" style={{ alignSelf: 'flex-start', textAlign: 'left', marginTop: '2px', fontSize: '1.35rem' }}>覚醒の準備（スーリヤ・ムドラー）</h2>
+              <p className="step-subtitle" style={{ alignSelf: 'flex-start', textAlign: 'left', marginBottom: '4px', fontSize: '0.85rem' }}>
                 スーリヤ・ムドラーを結んで姿勢を整えましょう。ボタンを押すと3分間の覚醒タイムが始まります。
               </p>
 
-              <div className="mudra-svg-container" style={{ width: '160px', height: '160px', margin: '4px auto' }}>
+              <div className="mudra-svg-container" style={{ width: '125px', height: '125px', margin: '2px auto' }}>
                 <AwakeMudraSVG />
               </div>
 
-              <div className="info-badge-list" style={{ width: '100%', marginTop: '8px' }}>
-                <div className="info-item">
-                  <div className="info-icon-dot" style={{ background: 'rgba(255, 110, 64, 0.2)', color: '#ff6e40' }}>1</div>
+              <div className="info-badge-list" style={{ width: '100%', marginTop: '4px', gap: '6px' }}>
+                <div className="info-item" style={{ padding: '6px 10px' }}>
+                  <div className="info-icon-dot" style={{ background: 'rgba(255, 110, 64, 0.2)', color: '#ff6e40', width: '20px', height: '20px', fontSize: '0.75rem' }}>1</div>
                   <div className="info-text-group">
-                    <h4>薬指を折って親指で上から押さえる</h4>
-                    <p>体温と代謝を上昇させ、交感神経をONにします。</p>
+                    <h4 style={{ fontSize: '0.85rem' }}>薬指を折って親指で上から押さえる</h4>
+                    <p style={{ fontSize: '0.75rem' }}>体温と代謝を上昇させ、交感神経をONにします。</p>
                   </div>
                 </div>
-                <div className="info-item">
-                  <div className="info-icon-dot" style={{ background: 'rgba(255, 110, 64, 0.2)', color: '#ff6e40' }}>2</div>
+                <div className="info-item" style={{ padding: '6px 10px' }}>
+                  <div className="info-icon-dot" style={{ background: 'rgba(255, 110, 64, 0.2)', color: '#ff6e40', width: '20px', height: '20px', fontSize: '0.75rem' }}>2</div>
                   <div className="info-text-group">
-                    <h4>人差し指・中指・小指をまっすぐ伸ばす</h4>
-                    <p>エネルギーを全身に循環させ、頭脳を鮮明にします。</p>
+                    <h4 style={{ fontSize: '0.85rem' }}>人差し指・中指・小指をまっすぐ伸ばす</h4>
+                    <p style={{ fontSize: '0.75rem' }}>エネルギーを全身に循環させ、頭脳を鮮明にします。</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <button onClick={handleStartAwake} className="btn-primary btn-awake" style={{ marginTop: '20px' }}>
-              <span>ムドラーを結んだので覚醒タイム（3分）を開始 ➔</span>
+            <button onClick={handleStartAwake} className="btn-primary btn-awake" style={{ marginTop: '12px', height: '52px', fontSize: '1.0rem' }}>
+              <span>⚡️ ムドラーを結んだので覚醒タイム（3分）をスタート ➔</span>
             </button>
           </div>
         )}
 
-        {/* STEP 6 (新): 覚醒タイム 3分タイマー */}
+        {/* STEP 6: 覚醒タイム 3分タイマー（カウントダウン動作中） */}
         {step === 6 && (
           <div className="step-view active">
-            <div className="glass-card mudra-display-card">
-              <span className="awake-badge">AWAKENING PHASE (3 MIN)</span>
-              <h2 className="step-title">覚醒タイム</h2>
-              <div className="timer-digits" style={{ fontSize: '2.2rem', color: '#ff6e40' }}>{formatTime(remainingAwake)}</div>
+            <div className="glass-card mudra-display-card" style={{ padding: '16px 14px' }}>
+              <span className="awake-badge" style={{ marginBottom: '4px' }}>AWAKENING PHASE (3 MIN)</span>
+              <h2 className="step-title" style={{ fontSize: '1.35rem', marginBottom: '2px' }}>覚醒タイム中</h2>
+              <div className="timer-digits" style={{ fontSize: '2.4rem', color: '#ff6e40', fontWeight: 700 }}>{formatTime(remainingAwake)}</div>
 
-              <div className="awake-progress-bar-container" style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', margin: '12px 0' }}>
+              <div className="awake-progress-bar-container" style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', margin: '8px 0' }}>
                 <div
                   className="awake-progress-fill"
                   style={{
@@ -404,14 +442,14 @@ export default function App() {
                 ></div>
               </div>
 
-              <div className="mudra-svg-container" style={{ width: '140px', height: '140px', margin: '4px auto' }}>
+              <div className="mudra-svg-container" style={{ width: '130px', height: '130px', margin: '2px auto' }}>
                 <AwakeMudraSVG />
               </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginTop: '2px', color: '#ffab40' }}>スーリヤ・ムドラー保持中</h3>
-              <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', margin: '4px 0 8px 0' }}>40Hzの音波で交感神経を優しくアクティベートしています。</p>
+              <h3 style={{ fontSize: '0.98rem', fontWeight: 700, marginTop: '2px', color: '#ffab40' }}>スーリヤ・ムドラー保持中</h3>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', margin: '2px 0 4px 0' }}>40Hzの音波で交感神経を優しくアクティベートしています。</p>
             </div>
 
-            <button onClick={handleFinish} className="btn-primary btn-awake" style={{ marginTop: '20px' }}>
+            <button onClick={handleFinish} className="btn-primary btn-awake" style={{ marginTop: '12px', height: '52px' }}>
               <span>スッキリ覚醒（完了へ）</span>
             </button>
           </div>

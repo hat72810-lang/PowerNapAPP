@@ -196,16 +196,42 @@ export class PowerNapAudioEngine {
   }
 
   startAlarmLoop() {
+    this.startAlarmLimited(3);
+  }
+
+  startAlarmLimited(times = 3, onComplete) {
     this.stop();
     this.init();
     this.isPlaying = true;
     this.currentPhase = 'alarm';
 
-    // 即座に1回鳴らし、以降 1.2 秒ごとに連続再生
+    let count = 0;
+    count++;
     this.playAwakeningSinglePulse();
+
+    if (count >= times) {
+      if (onComplete) setTimeout(() => { if (this.currentPhase === 'alarm') { this.stop(); onComplete(); } }, 1200);
+      return;
+    }
+
     this.alarmInterval = setInterval(() => {
       if (this.isPlaying && this.currentPhase === 'alarm') {
+        count++;
         this.playAwakeningSinglePulse();
+
+        if (count >= times) {
+          this.stopAlarmLoop();
+          if (onComplete) {
+            setTimeout(() => {
+              if (this.currentPhase === 'alarm') {
+                this.stop();
+                onComplete();
+              }
+            }, 1200);
+          }
+        }
+      } else {
+        this.stopAlarmLoop();
       }
     }, 1200);
   }
@@ -228,7 +254,7 @@ export class PowerNapAudioEngine {
     const now = this.ctx.currentTime;
     this.masterGain = this.ctx.createGain();
     // 覚醒中の音量を 0.03 (3%) スタートに大幅ダウン（非常に優しくマイルドな音量）
-    this.masterGain.gain.setValueAtTime(0.03, now);
+    this.masterGain.gain.setValueAtTime(0.01, now);
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
@@ -243,15 +269,15 @@ export class PowerNapAudioEngine {
       this.awakeLfo = lfo;
 
       const lfoGain = this.ctx.createGain();
-      lfoGain.gain.setValueAtTime(0.15, now);
+      lfoGain.gain.setValueAtTime(0.06, now);
 
       const pulseGain = this.ctx.createGain();
-      pulseGain.gain.setValueAtTime(0.2, now);
+      pulseGain.gain.setValueAtTime(0.08, now);
       this.awakeGain = pulseGain;
 
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(900, now);
+      filter.frequency.setValueAtTime(650, now);
 
       lfo.connect(lfoGain);
       lfoGain.connect(pulseGain.gain);
@@ -272,7 +298,7 @@ export class PowerNapAudioEngine {
 
       const pannerLeft = this.createPanner(-1.0);
       const gainLeft = this.ctx.createGain();
-      gainLeft.gain.setValueAtTime(0.15, now);
+      gainLeft.gain.setValueAtTime(0.06, now);
 
       oscLeft.connect(gainLeft);
       gainLeft.connect(pannerLeft);
@@ -285,7 +311,7 @@ export class PowerNapAudioEngine {
 
       const pannerRight = this.createPanner(1.0);
       const gainRight = this.ctx.createGain();
-      gainRight.gain.setValueAtTime(0.15, now);
+      gainRight.gain.setValueAtTime(0.06, now);
 
       oscRight.connect(gainRight);
       gainRight.connect(pannerRight);
@@ -304,7 +330,7 @@ export class PowerNapAudioEngine {
     const clampedProgress = Math.max(0, Math.min(1, progress));
 
     // 音量を 0.03 (3%) から 0.15 (15%) へ非常に静かで緩やかに調整
-    const targetVolume = 0.03 + clampedProgress * 0.12;
+    const targetVolume = 0.01 + clampedProgress * 0.04;
     this.masterGain.gain.setValueAtTime(targetVolume, now);
 
     if (this.mode === 'speaker' && this.awakeLfo && this.awakeOsc1) {
