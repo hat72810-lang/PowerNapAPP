@@ -113,6 +113,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- Step 1 Auto Start Listeners ---
+  const autoStartBtns = document.querySelectorAll(".btn-auto-start");
+  autoStartBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const secAttr = btn.getAttribute("data-auto-seconds");
+      const minAttr = btn.getAttribute("data-auto-minutes");
+      if (secAttr) {
+        restDurationSeconds = parseInt(secAttr, 10);
+      } else if (minAttr) {
+        restDurationSeconds = parseInt(minAttr, 10) * 60;
+      }
+      startPowerNapTimer();
+    });
+  });
+
   // --- Step 2 Listeners ---
   if (btnModeSpeaker) {
     btnModeSpeaker.addEventListener("click", () => {
