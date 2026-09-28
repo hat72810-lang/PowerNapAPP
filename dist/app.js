@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Step 4 Controls (パワーナップタイマー)
   const timerDigitsEl = document.getElementById("timer-digits");
   const timerProgressCircle = document.getElementById("timer-progress-circle");
+  const napProgressFill = document.getElementById("nap-progress-fill");
   const audioModeBadgeText = document.getElementById("audio-mode-badge-text");
   const btnCancelNap = document.getElementById("btn-cancel-nap");
 
@@ -194,11 +195,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // UI Updates
     if (timerDigitsEl) timerDigitsEl.textContent = formatTime(remainingSeconds);
+    if (napProgressFill) napProgressFill.style.width = "0%";
     if (audioModeBadgeText) {
       audioModeBadgeText.textContent = audioMode === "speaker" ? "528Hz + 4Hz 揺らぎ再生中" : "200/204Hz バイノーラル再生中";
     }
     
-    // Circle Stroke Init (Radius 85 => Circumference = 534.07)
+    // Circle Stroke Init (Radius 85 => Circumference = 534.07, if present)
     const circumference = 534.07;
     if (timerProgressCircle) {
       timerProgressCircle.style.strokeDasharray = `${circumference}`;
@@ -219,9 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
       
       if (timerDigitsEl) timerDigitsEl.textContent = formatTime(remainingSeconds);
       
-      // Update Circle Progress
+      // Update Progress Bar
+      const progressFraction = (totalRestSeconds - remainingSeconds) / totalRestSeconds;
+      if (napProgressFill) {
+        napProgressFill.style.width = `${progressFraction * 100}%`;
+      }
       if (timerProgressCircle) {
-        const progressFraction = (totalRestSeconds - remainingSeconds) / totalRestSeconds;
         const offset = circumference * progressFraction;
         timerProgressCircle.style.strokeDashoffset = `${offset}`;
       }

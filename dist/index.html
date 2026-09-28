@@ -196,45 +196,32 @@
 
       <!-- ================= STEP 4: POWER NAP TIMER ================= -->
       <section id="step-4" class="step-view">
-        <div class="glass-card">
-          <h2 class="step-title">パワーナップ中</h2>
-          <p class="step-subtitle">目を閉じて深くリラックスしましょう。</p>
-
-          <div id="mudra-container-nap" class="mudra-svg-container" style="width: 130px; height: 130px; margin: 2px auto !important; display: flex; justify-content: center; align-items: center;">
-            <img src="chin_mudra.jpg" alt="チン・ムドラー" class="mudra-hand-img" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 20px rgba(0, 229, 255, 0.5); border: 1.5px solid rgba(0, 229, 255, 0.4); display: block;" />
-          </div>
-          <h3 class="mudra-name-title" style="color: var(--cyan); margin: 6px auto 0 auto; font-size: 1.05rem; font-weight: 600; text-align: center;">チン・ムドラー</h3>
-
-          <div class="timer-ring-wrapper">
-            <svg class="timer-svg" viewBox="0 0 190 190">
-              <defs>
-                <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#00e5ff"/>
-                  <stop offset="100%" stop-color="#7c4dff"/>
-                </linearGradient>
-              </defs>
-              <circle class="timer-bg-circle" cx="95" cy="95" r="85" />
-              <circle id="timer-progress-circle" class="timer-progress-circle" cx="95" cy="95" r="85" />
-            </svg>
-            <div class="timer-center-content">
-              <div id="timer-digits" class="timer-digits">15:00</div>
-              <div class="audio-status-badge">
-                <div class="audio-wave-bars">
-                  <div class="wave-bar"></div>
-                  <div class="wave-bar"></div>
-                  <div class="wave-bar"></div>
-                </div>
-                <span id="audio-mode-badge-text">528Hz + 4Hz 揺らぎ再生中</span>
-              </div>
-            </div>
+        <div class="glass-card mudra-display-card">
+          <div class="nap-header-glow" style="text-align: center;">
+            <span class="nap-badge" style="background: rgba(0, 229, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; display: inline-block; margin-bottom: 6px;">POWER NAP PHASE</span>
+            <h2 class="step-title" style="margin-bottom: 2px;">パワーナップ中</h2>
+            <div id="timer-digits" class="timer-digits" style="font-size: 2.3rem; font-weight: 700; color: var(--cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); margin: 2px 0;">15:00</div>
           </div>
 
-          <p style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
+          <div class="nap-progress-bar-container" style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; margin: 12px 0 18px 0; overflow: hidden;">
+            <div id="nap-progress-fill" class="nap-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00e5ff 0%, #7c4dff 100%); transition: width 0.3s ease; box-shadow: 0 0 8px #00e5ff;"></div>
+          </div>
+
+          <div id="mudra-container-nap" class="mudra-svg-container" style="width: 130px; height: 130px; margin: 4px auto !important; display: flex; justify-content: center; align-items: center;">
+            <img src="chin_mudra.jpg" alt="チン・ムドラー" class="mudra-hand-img" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 25px rgba(0, 229, 255, 0.5); border: 1.5px solid rgba(0, 229, 255, 0.4); display: block;" />
+          </div>
+          <h3 class="mudra-name-title" style="color: var(--cyan); margin: 10px auto 0 auto; font-size: 1.05rem; font-weight: 600; text-align: center;">チン・ムドラー</h3>
+
+          <p style="font-size: 0.78rem; color: var(--cyan); margin-top: 12px; text-align: center;">
+            ⚡️ <span id="audio-mode-badge-text">528Hz + 4Hz 揺らぎ再生中</span>
+          </p>
+
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
             ※ 終了直前に音量は自動で静かにフェードアウトします。
           </p>
         </div>
 
-        <div class="btn-container">
+        <div class="btn-container" style="margin-top: 16px;">
           <button id="btn-cancel-nap" class="btn-secondary">
             <span>タイマーを中断する</span>
           </button>
