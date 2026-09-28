@@ -1,0 +1,21 @@
+{
+  "name": "Power Nap - 理想の15分仮眠＆覚醒セッション",
+  "short_name": "PowerNap",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090a12",
+  "theme_color": "#090a12",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png?v=2",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
