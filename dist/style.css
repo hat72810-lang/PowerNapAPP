@@ -195,6 +195,15 @@ body {
 }
 
 /* Step 1: Coffee Prep & 3D Mudra Opening Hero Element */
+.hero-graphic-box {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 4px auto 2px auto;
+  pointer-events: none !important;
+}
+
 .coffee-illustration {
   position: relative;
   width: 90px;
@@ -202,7 +211,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 4px auto 2px auto;
+  pointer-events: none !important;
 }
 
 .splash-aura-glow-inline {
@@ -216,7 +225,7 @@ body {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(0, 229, 255, 0.5) 0%, rgba(255, 145, 0, 0.35) 45%, rgba(0,0,0,0) 75%);
   animation: heroAuraPulse 2.4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
-  pointer-events: none;
+  pointer-events: none !important;
   z-index: 1;
 }
 
@@ -241,6 +250,7 @@ body {
   height: 82px;
   border-radius: 50%;
   animation: heroMudraFlyIn 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: none !important;
 }
 
 @keyframes heroMudraFlyIn {
@@ -272,6 +282,7 @@ body {
   box-shadow: 0 0 25px rgba(255, 145, 0, 0.75), 0 0 45px rgba(0, 229, 255, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.4);
   border: 2px solid rgba(255, 215, 0, 0.85);
   display: block;
+  pointer-events: none !important;
 }
 
 .coffee-badge {
@@ -290,6 +301,7 @@ body {
   box-shadow: 0 0 12px rgba(255, 167, 38, 0.6);
   animation: coffeeBadgePop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s forwards;
   opacity: 0;
+  pointer-events: none !important;
 }
 
 @keyframes coffeeBadgePop {
@@ -302,10 +314,13 @@ body {
   height: 18px;
   color: #ffa726;
   filter: drop-shadow(0 2px 8px rgba(255, 167, 38, 0.6));
+  pointer-events: none !important;
 }
 
 /* Auto Start Section - Ultra Premium Glass Style */
 .auto-start-section {
+  position: relative;
+  z-index: 50 !important;
   width: 100%;
   margin: 10px 0 6px 0;
   padding: 10px 12px;
@@ -315,6 +330,7 @@ body {
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  touch-action: manipulation;
 }
 
 .auto-start-header {
@@ -783,9 +799,13 @@ body {
   margin-bottom: calc(var(--safe-bottom) + 4px);
   flex-shrink: 0;
   width: 100%;
+  position: relative;
+  z-index: 100 !important;
 }
 
 .btn-primary {
+  position: relative;
+  z-index: 100 !important;
   width: 100%;
   padding: 13px 20px;
   font-size: 0.92rem;
@@ -802,6 +822,8 @@ body {
   box-shadow: 0 8px 24px rgba(124, 77, 255, 0.4);
   transition: all 0.2s ease;
   line-height: 1.2;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-primary:active {
