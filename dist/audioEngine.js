@@ -201,7 +201,20 @@ class PowerNapAudioEngine {
   }
 
   startAlarmLoop() {
-    this.startAlarmLimited(3);
+    this.stop();
+    this.init();
+    this.isPlaying = true;
+    this.currentPhase = 'alarm';
+
+    this.playAwakeningSinglePulse();
+
+    this.alarmInterval = setInterval(() => {
+      if (this.isPlaying && this.currentPhase === 'alarm') {
+        this.playAwakeningSinglePulse();
+      } else {
+        this.stopAlarmLoop();
+      }
+    }, 1200);
   }
 
   startAlarmLimited(times = 3, onComplete) {
