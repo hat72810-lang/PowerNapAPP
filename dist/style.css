@@ -194,31 +194,114 @@ body {
   position: relative;
 }
 
-/* Step 1: Coffee Prep */
+/* Step 1: Coffee Prep & 3D Mudra Opening Hero Element */
 .coffee-illustration {
-  width: 76px;
-  height: 76px;
   position: relative;
+  width: 90px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 4px auto 2px auto;
 }
 
-.coffee-glow {
+.splash-aura-glow-inline {
   position: absolute;
-  width: 66px;
-  height: 66px;
-  background: radial-gradient(circle, rgba(255, 160, 0, 0.35) 0%, rgba(255, 160, 0, 0) 70%);
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  margin-top: -70px;
+  margin-left: -70px;
   border-radius: 50%;
-  animation: pulseGlow 3s infinite ease-in-out;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.5) 0%, rgba(255, 145, 0, 0.35) 45%, rgba(0,0,0,0) 75%);
+  animation: heroAuraPulse 2.4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes heroAuraPulse {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.hero-mudra-badge {
+  position: relative;
+  z-index: 2;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  animation: heroMudraFlyIn 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes heroMudraFlyIn {
+  0% {
+    transform: scale(0.1) rotate(-30deg);
+    opacity: 0;
+    filter: blur(10px) brightness(2);
+  }
+  65% {
+    transform: scale(1.15) rotate(5deg);
+    opacity: 1;
+    filter: blur(0px) brightness(1.2);
+  }
+  85% {
+    transform: scale(0.96) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1.0) rotate(0deg);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+.hero-mudra-img {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 25px rgba(255, 145, 0, 0.75), 0 0 45px rgba(0, 229, 255, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 215, 0, 0.85);
+  display: block;
+}
+
+.coffee-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1.5px solid #ffa726;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(255, 167, 38, 0.6);
+  animation: coffeeBadgePop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s forwards;
+  opacity: 0;
+}
+
+@keyframes coffeeBadgePop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .coffee-icon-svg {
-  width: 48px;
-  height: 48px;
+  width: 18px;
+  height: 18px;
   color: #ffa726;
-  filter: drop-shadow(0 4px 14px rgba(255, 167, 38, 0.5));
-  z-index: 2;
+  filter: drop-shadow(0 2px 8px rgba(255, 167, 38, 0.6));
 }
 
 /* Auto Start Section - Ultra Premium Glass Style */

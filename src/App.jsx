@@ -178,8 +178,13 @@ export default function App() {
 
               <div className="hero-graphic-box">
                 <div className="coffee-illustration">
-                  <div className="coffee-glow"></div>
-                  <Coffee className="coffee-icon-svg" style={{ color: '#ffa726', width: '48px', height: '48px' }} />
+                  <div className="splash-aura-glow-inline"></div>
+                  <div className="hero-mudra-badge">
+                    <img src="surya_mudra.jpg" alt="Surya Mudra" className="hero-mudra-img" />
+                  </div>
+                  <div className="coffee-badge">
+                    <Coffee className="coffee-icon-svg" />
+                  </div>
                 </div>
               </div>
 
