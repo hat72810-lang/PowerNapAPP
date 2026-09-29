@@ -3,6 +3,26 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+  // --- Splash Screen Auto-Dismiss & Tap Handler ---
+  const splashOverlay = document.getElementById("splash-overlay");
+  if (splashOverlay) {
+    const dismissSplash = () => {
+      splashOverlay.classList.add("fade-out");
+      setTimeout(() => {
+        if (splashOverlay.parentNode) {
+          splashOverlay.parentNode.removeChild(splashOverlay);
+        }
+      }, 650);
+    };
+
+    const splashTimeout = setTimeout(dismissSplash, 2300);
+
+    splashOverlay.addEventListener("click", () => {
+      clearTimeout(splashTimeout);
+      dismissSplash();
+    });
+  }
+
   // App State Variables
   let currentStep = 1;
   let audioMode = "speaker"; // "speaker" | "earphone"
