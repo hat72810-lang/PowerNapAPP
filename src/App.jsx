@@ -7,22 +7,6 @@ export default function App() {
   const [step, setStep] = useState(1);
   const [audioMode, setAudioMode] = useState('speaker'); // 'speaker' | 'earphone'
   const [durationSeconds, setDurationSeconds] = useState(15 * 60);
-  const [showSplash, setShowSplash] = useState(true);
-  const [splashFading, setSplashFading] = useState(false);
-
-  // Splash Screen Dismiss Effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSplashFading(true);
-      setTimeout(() => setShowSplash(false), 650);
-    }, 2300);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleDismissSplash = () => {
-    setSplashFading(true);
-    setTimeout(() => setShowSplash(false), 650);
-  };
 
   // Timer States
   const [remainingRest, setRemainingRest] = useState(15 * 60);
@@ -171,32 +155,7 @@ export default function App() {
   const progressOffset = circumference * (1 - remainingRest / durationSeconds);
 
   return (
-    <>
-      {showSplash && (
-        <div className={`splash-overlay ${splashFading ? 'fade-out' : ''}`} onClick={handleDismissSplash}>
-          <div className="splash-content">
-            <div className="splash-aura-glow"></div>
-            <div className="splash-particles">
-              <span className="particle p1"></span>
-              <span className="particle p2"></span>
-              <span className="particle p3"></span>
-              <span className="particle p4"></span>
-              <span className="particle p5"></span>
-              <span className="particle p6"></span>
-            </div>
-            <div className="splash-mudra-wrapper">
-              <img src="surya_mudra.jpg" alt="PowerNap Opening Mudra" className="splash-mudra-img" />
-              <div className="splash-energy-ring"></div>
-            </div>
-            <div className="splash-title-box">
-              <h1 className="splash-brand-title">POWER NAP</h1>
-              <p className="splash-brand-sub">Deep Rest & Energy Recharged</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div id="app-container" style={{ position: 'relative', width: '100%', maxWidth: '480px', height: '100dvh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
+    <div id="app-container" style={{ position: 'relative', width: '100%', maxWidth: '480px', height: '100dvh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
       
       {/* App Header */}
       <header className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
