@@ -65,10 +65,10 @@ export class PowerNapAudioEngine {
     this.currentPhase = 'rest';
 
     const now = this.ctx.currentTime;
-    // パワーナップ中の音量を約 2% (0.02) にダウンして非常に静かで微小な音量に
-    const targetMasterGain = mode === 'speaker' ? 0.02 : 0.04;
+    // パワーナップ中の音量をより静かで耳に優しい微小な音量（約0.8%〜1.5%）に設定
+    const targetMasterGain = mode === 'speaker' ? 0.008 : 0.015;
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(0.001, now);
+    this.masterGain.gain.setValueAtTime(0.0005, now);
     this.masterGain.gain.exponentialRampToValueAtTime(targetMasterGain, now + 2);
     this.masterGain.connect(this.ctx.destination);
 
