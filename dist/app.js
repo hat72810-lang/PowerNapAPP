@@ -2,7 +2,7 @@
  * PowerNap Main Application Logic (Updated 7-Step Flow: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7)
  */
 
-document.addEventListener("DOMContentLoaded", () => {
+function initApp() {
   // App State Variables
   let currentStep = 1;
   let audioMode = "speaker"; // "speaker" | "earphone"
@@ -354,4 +354,10 @@ document.addEventListener("DOMContentLoaded", () => {
       goToStep(1);
     });
   }
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
