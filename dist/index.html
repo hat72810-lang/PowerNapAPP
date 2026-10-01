@@ -7,9 +7,11 @@
       location.replace("https://" + location.host + location.pathname + location.search);
     }
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js").catch(() => {});
-      });
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister().catch(function() {});
+        }
+      }).catch(function() {});
     }
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -18,11 +20,11 @@
   <meta name="theme-color" content="#090a12" />
   <title>Power Nap - 理想の15分仮眠＆覚醒セッション</title>
 
-  <!-- iOS Apple Touch Icon & Favicon with Cache Busting v3 -->
-  <link rel="icon" type="image/png" href="favicon.png?v=3" />
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3" />
-  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png?v=3" />
-  <link rel="manifest" href="manifest.json?v=3" />
+  <!-- iOS Apple Touch Icon & Favicon with Cache Busting v4 -->
+  <link rel="icon" type="image/png" href="favicon.png?v=4" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=4" />
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png?v=4" />
+  <link rel="manifest" href="manifest.json?v=4" />
   <meta name="apple-mobile-web-app-title" content="PowerNap" />
 
   <!-- Google Fonts -->
@@ -30,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261001_v4">
 </head>
 <body>
 
@@ -347,8 +349,8 @@
     </main>
   </div>
 
-  <script src="mudras.js"></script>
-  <script src="audioEngine.js"></script>
-  <script src="app.js"></script>
+  <script src="mudras.js?v=20261001_v4"></script>
+  <script src="audioEngine.js?v=20261001_v4"></script>
+  <script src="app.js?v=20261001_v4"></script>
 </body>
 </html>
