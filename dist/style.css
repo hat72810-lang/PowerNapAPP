@@ -597,6 +597,60 @@ body {
   height: 16px;
 }
 
+/* 528Hz LFO Speed Selection Grid */
+.lfo-speed-section {
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.lfo-speed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+.lfo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lfo-btn.active {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: #00e5ff;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.lfo-btn .lfo-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.lfo-btn.active .lfo-val {
+  color: #00e5ff;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+}
+
+.lfo-btn .lfo-unit {
+  font-size: 0.65rem;
+  color: var(--text-sub);
+  margin-top: 1px;
+}
+
 /* Duration Grid */
 .duration-grid {
   display: grid;

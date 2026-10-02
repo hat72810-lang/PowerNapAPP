@@ -58,11 +58,12 @@ class PowerNapAudioEngine {
     }
   }
 
-  startRestSound(mode = 'speaker') {
+  startRestSound(mode = 'speaker', lfoSpeed = 1) {
     this.init();
     this.stop();
 
     this.mode = mode;
+    this.lfoSpeed = parseFloat(lfoSpeed) || 1;
     this.isPlaying = true;
     this.currentPhase = 'rest';
 
@@ -82,7 +83,7 @@ class PowerNapAudioEngine {
 
       const lfo = this.ctx.createOscillator();
       lfo.type = 'sine';
-      lfo.frequency.setValueAtTime(4, now);
+      lfo.frequency.setValueAtTime(this.lfoSpeed, now);
 
       const lfoGain = this.ctx.createGain();
       lfoGain.gain.setValueAtTime(0.1, now);
