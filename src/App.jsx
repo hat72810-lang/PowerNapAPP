@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioEngine } from './utils/audioEngine';
 import { RestMudraSVG, AwakeMudraSVG } from './components/Mudras';
-import { Volume2, Headphones, Play, RefreshCw, CheckCircle, Coffee, Zap, ArrowRight } from 'lucide-react';
+import { Volume2, Headphones, Play, RefreshCw, CheckCircle, Coffee, Zap, ArrowRight, Home } from 'lucide-react';
 
 export default function App() {
   const [step, setStep] = useState(1);
@@ -159,11 +159,19 @@ export default function App() {
       
       {/* App Header */}
       <header className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <div className="brand-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700' }}>
+        <div className="brand-logo" onClick={handleResetApp} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', cursor: 'pointer' }} title="トップ画面に戻る">
           <Zap style={{ color: '#00e5ff' }} />
           <span>POWER NAP</span>
         </div>
-        <div className="step-indicator">STEP {step} / 7</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {step > 1 && (
+            <button id="btn-header-home" className="header-home-btn" onClick={handleResetApp} title="ホームに戻る">
+              <Home size={14} style={{ color: '#00e5ff' }} />
+              <span>ホーム</span>
+            </button>
+          )}
+          <div className="step-indicator">STEP {step} / 7</div>
+        </div>
       </header>
 
       {/* Main Container */}

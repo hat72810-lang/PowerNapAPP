@@ -79,10 +79,42 @@ function initApp() {
     }
   }
 
+  // Header Controls
+  const btnHeaderHome = document.getElementById("btn-header-home");
+  const brandLogoEl = document.querySelector(".brand-logo");
+
+  // --- Reset & Return to Home ---
+  function resetToHome() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    if (awakeInterval) {
+      clearInterval(awakeInterval);
+      awakeInterval = null;
+    }
+    if (window.powerNapAudio) {
+      window.powerNapAudio.stop();
+    }
+    goToStep(1);
+  }
+
+  if (btnHeaderHome) {
+    btnHeaderHome.addEventListener("click", resetToHome);
+  }
+  if (brandLogoEl) {
+    brandLogoEl.style.cursor = "pointer";
+    brandLogoEl.addEventListener("click", resetToHome);
+  }
+
   // --- Navigation & View Switching ---
   function goToStep(stepNumber) {
     currentStep = stepNumber;
     stepIndicatorEl.textContent = `STEP ${stepNumber} / 7`;
+
+    if (btnHeaderHome) {
+      btnHeaderHome.style.display = stepNumber === 1 ? "none" : "flex";
+    }
 
     Object.keys(stepViews).forEach(key => {
       if (stepViews[key]) {

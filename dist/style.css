@@ -112,6 +112,34 @@ body {
   border: 1px solid rgba(0, 229, 255, 0.25);
 }
 
+.header-home-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-home-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.header-home-btn svg {
+  width: 14px;
+  height: 14px;
+  color: var(--cyan);
+}
+
 /* Main Content Area */
 .app-main {
   flex: 1;
