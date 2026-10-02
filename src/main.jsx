@@ -8,9 +8,16 @@ if (typeof window !== 'undefined' && location.protocol === 'http:' && location.h
 }
 
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (let r of registrations) {
+      r.unregister().catch(() => {});
+    }
+  }).catch(() => {});
+}
+if (typeof window !== 'undefined' && 'caches' in window) {
+  caches.keys().then((keys) => {
+    for (let k of keys) caches.delete(k);
+  }).catch(() => {});
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(

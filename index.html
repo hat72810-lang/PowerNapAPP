@@ -13,6 +13,13 @@
         }
       }).catch(function() {});
     }
+    if ("caches" in window) {
+      caches.keys().then(function(names) {
+        for (let name of names) {
+          caches.delete(name).catch(function() {});
+        }
+      }).catch(function() {});
+    }
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
