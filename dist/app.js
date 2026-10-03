@@ -6,7 +6,7 @@ function initApp() {
   // App State Variables
   let currentStep = 1;
   let audioMode = "speaker"; // "speaker" | "earphone"
-  let selectedLfoSpeed = 1.0; // default 1.0Hz (標準 1秒に1回)
+  let selectedLfoSpeed = 0.5; // default 0.5Hz (標準 2秒に1回)
   let restDurationSeconds = 15 * 60; // default 15 min
   
   let timerInterval = null;
@@ -247,7 +247,7 @@ function initApp() {
     if (timerDigitsEl) timerDigitsEl.textContent = formatTime(remainingSeconds);
     if (napProgressFill) napProgressFill.style.width = "0%";
     if (audioModeBadgeText) {
-      const lfoLabel = selectedLfoSpeed === 0.5 ? "0.5Hz ゆったり" : (selectedLfoSpeed === 4 ? "4Hz 速め" : "1Hz 標準");
+      const lfoLabel = selectedLfoSpeed === 0.25 ? "0.25Hz ゆったり" : (selectedLfoSpeed === 1 ? "1Hz やや速め" : "0.5Hz 標準");
       audioModeBadgeText.textContent = audioMode === "speaker" ? `528Hz (${lfoLabel}) 再生中` : "200/204Hz バイノーラル再生中";
     }
     
