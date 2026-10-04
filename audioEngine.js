@@ -58,12 +58,12 @@ class PowerNapAudioEngine {
     }
   }
 
-  startRestSound(mode = 'speaker', lfoSpeed = 0.5) {
+  startRestSound(mode = 'speaker', lfoSpeed = 0.25) {
     this.init();
     this.stop();
 
     this.mode = mode;
-    this.lfoSpeed = parseFloat(lfoSpeed) || 0.5;
+    this.lfoSpeed = parseFloat(lfoSpeed) || 0.25;
     this.isPlaying = true;
     this.currentPhase = 'rest';
 
