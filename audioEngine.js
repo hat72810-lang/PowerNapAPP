@@ -69,8 +69,8 @@ class PowerNapAudioEngine {
 
     const now = this.ctx.currentTime;
     
-    // マスターゲイン（より静かで耳に優しい微小な音量: スピーカー 0.008 / イヤホン 0.015）
-    const targetMasterGain = mode === 'speaker' ? 0.008 : 0.015;
+    // マスターゲイン（スピーカー: 0.008 （変更なし） / イヤホン: 0.035 （適正ボリュームへアップ））
+    const targetMasterGain = mode === 'speaker' ? 0.008 : 0.035;
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.setValueAtTime(0.0005, now);
     this.masterGain.gain.exponentialRampToValueAtTime(targetMasterGain, now + 2);
@@ -147,7 +147,7 @@ class PowerNapAudioEngine {
   fadeRestSound(durationSeconds = 15) {
     if (!this.masterGain || !this.ctx) return;
     const now = this.ctx.currentTime;
-    const initialGain = this.mode === 'speaker' ? 0.008 : 0.015;
+    const initialGain = this.mode === 'speaker' ? 0.008 : 0.035;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value || initialGain, now);
     this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
@@ -177,11 +177,17 @@ class PowerNapAudioEngine {
     });
   }
 
-  playAwakeningSinglePulse() {
+  playAwakeningSinglePulse(alarmIndex = 0) {
     this.init();
     const now = this.ctx.currentTime;
     const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
     
+    // イヤホンモード時: 1回目 0.35, 2回目 0.65, 3回目以降 1.0 (耳に優しいフェードイン)
+    // スピーカーモード時: 常に 1.0 (現状維持・完全変更なし)
+    const targetPeak = this.mode === 'earphone'
+      ? Math.min(1.0, 0.35 + alarmIndex * 0.30)
+      : 1.0;
+
     notes.forEach((freq, idx) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -190,7 +196,7 @@ class PowerNapAudioEngine {
       osc.frequency.setValueAtTime(freq, now + idx * 0.08);
 
       gain.gain.setValueAtTime(0.001, now + idx * 0.08);
-      gain.gain.exponentialRampToValueAtTime(1.0, now + idx * 0.08 + 0.03); // フル音量 1.0 (100%)
+      gain.gain.exponentialRampToValueAtTime(targetPeak, now + idx * 0.08 + 0.03);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.4);
 
       osc.connect(gain);
@@ -207,11 +213,13 @@ class PowerNapAudioEngine {
     this.isPlaying = true;
     this.currentPhase = 'alarm';
 
-    this.playAwakeningSinglePulse();
+    let alarmCount = 0;
+    this.playAwakeningSinglePulse(alarmCount);
 
     this.alarmInterval = setInterval(() => {
       if (this.isPlaying && this.currentPhase === 'alarm') {
-        this.playAwakeningSinglePulse();
+        alarmCount++;
+        this.playAwakeningSinglePulse(alarmCount);
       } else {
         this.stopAlarmLoop();
       }
@@ -227,8 +235,8 @@ class PowerNapAudioEngine {
     let count = 0;
 
     // 1回目鳴動
+    this.playAwakeningSinglePulse(count);
     count++;
-    this.playAwakeningSinglePulse();
 
     if (count >= times) {
       if (onComplete) setTimeout(() => { if (this.currentPhase === 'alarm') { this.stop(); onComplete(); } }, 1200);
@@ -237,8 +245,8 @@ class PowerNapAudioEngine {
 
     this.alarmInterval = setInterval(() => {
       if (this.isPlaying && this.currentPhase === 'alarm') {
+        this.playAwakeningSinglePulse(count);
         count++;
-        this.playAwakeningSinglePulse();
 
         if (count >= times) {
           this.stopAlarmLoop();
@@ -248,6 +256,14 @@ class PowerNapAudioEngine {
                 this.stop();
                 onComplete();
               }
+            }, 1200);
+          }
+        }
+      } else {
+        this.stopAlarmLoop();
+      }
+    }, 1200);
+  }
             }, 1200);
           }
         }
