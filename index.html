@@ -252,9 +252,13 @@
             <div id="timer-digits" class="timer-digits" style="font-size: 2.3rem; font-weight: 700; color: var(--cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); margin: 2px 0;">15:00</div>
           </div>
 
-          <div class="nap-progress-bar-container" style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; margin: 12px 0 18px 0; overflow: hidden;">
-            <div id="nap-progress-fill" class="nap-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00e5ff 0%, #7c4dff 100%); transition: width 0.3s ease; box-shadow: 0 0 8px #00e5ff;"></div>
+          <div id="nap-progress-bar-container" class="nap-progress-bar-container">
+            <div class="progress-track">
+              <div id="nap-progress-fill" class="nap-progress-fill"></div>
+            </div>
+            <div id="nap-progress-knob" class="progress-knob"></div>
           </div>
+          <div class="seek-hint-text">👆 バーを指でなぞって時間移動できます</div>
 
           <div id="mudra-container-nap" class="mudra-svg-container" style="width: 130px; height: 130px; margin: 4px auto !important; display: flex; justify-content: center; align-items: center;">
             <img src="chin_mudra.jpg" alt="チン・ムドラー" class="mudra-hand-img" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 25px rgba(0, 229, 255, 0.5); border: 1.5px solid rgba(0, 229, 255, 0.4); display: block;" />
@@ -325,9 +329,13 @@
             <div id="awake-timer-digits" class="timer-digits" style="font-size: 2.3rem; color: var(--accent-awake);">03:00</div>
           </div>
 
-          <div class="awake-progress-bar-container">
-            <div id="awake-progress-fill" class="awake-progress-fill"></div>
+          <div id="awake-progress-bar-container" class="awake-progress-bar-container">
+            <div class="progress-track">
+              <div id="awake-progress-fill" class="awake-progress-fill"></div>
+            </div>
+            <div id="awake-progress-knob" class="progress-knob"></div>
           </div>
+          <div class="seek-hint-text" style="color: var(--accent-awake);">👆 バーを指でなぞって時間移動できます</div>
 
           
           <div id="mudra-container-awake" class="mudra-svg-container" style="width: 130px; height: 130px; margin: 4px auto !important; display: flex; justify-content: center; align-items: center;">

@@ -47,6 +47,8 @@ function initApp() {
   const timerDigitsEl = document.getElementById("timer-digits");
   const timerProgressCircle = document.getElementById("timer-progress-circle");
   const napProgressFill = document.getElementById("nap-progress-fill");
+  const napProgressContainer = document.getElementById("nap-progress-bar-container");
+  const napProgressKnob = document.getElementById("nap-progress-knob");
   const audioModeBadgeText = document.getElementById("audio-mode-badge-text");
   const btnCancelNap = document.getElementById("btn-cancel-nap");
 
@@ -56,6 +58,8 @@ function initApp() {
   // Step 6 Controls (覚醒タイマー進行)
   const awakeTimerDigits = document.getElementById("awake-timer-digits");
   const awakeProgressFill = document.getElementById("awake-progress-fill");
+  const awakeProgressContainer = document.getElementById("awake-progress-bar-container");
+  const awakeProgressKnob = document.getElementById("awake-progress-knob");
   const btnSkipAwake = document.getElementById("btn-skip-awake");
 
   // Step 7 Controls (完了)
@@ -267,20 +271,11 @@ function initApp() {
 
     // Countdown Interval
     if (timerInterval) clearInterval(timerInterval);
+    updateNapUI();
     timerInterval = setInterval(() => {
       remainingSeconds--;
       
-      if (timerDigitsEl) timerDigitsEl.textContent = formatTime(remainingSeconds);
-      
-      // Update Progress Bar
-      const progressFraction = (totalRestSeconds - remainingSeconds) / totalRestSeconds;
-      if (napProgressFill) {
-        napProgressFill.style.width = `${progressFraction * 100}%`;
-      }
-      if (timerProgressCircle) {
-        const offset = circumference * progressFraction;
-        timerProgressCircle.style.strokeDashoffset = `${offset}`;
-      }
+      updateNapUI();
 
       // 残り時間に応じたフェードアウト処理
       const fadeTimeThreshold = Math.min(15, Math.floor(totalRestSeconds / 2));
@@ -294,6 +289,19 @@ function initApp() {
         onNapTimerComplete();
       }
     }, 1000);
+  }
+
+  function updateNapUI() {
+    if (timerDigitsEl) timerDigitsEl.textContent = formatTime(remainingSeconds);
+    const progressFraction = totalRestSeconds > 0 ? (totalRestSeconds - remainingSeconds) / totalRestSeconds : 0;
+    const pct = Math.min(100, Math.max(0, progressFraction * 100));
+    if (napProgressFill) napProgressFill.style.width = `${pct}%`;
+    if (napProgressKnob) napProgressKnob.style.left = `${pct}%`;
+    if (timerProgressCircle) {
+      const circumference = 534.07;
+      const offset = circumference * progressFraction;
+      timerProgressCircle.style.strokeDashoffset = `${offset}`;
+    }
   }
 
   if (btnCancelNap) {
@@ -361,14 +369,13 @@ function initApp() {
     goToStep(6);
 
     if (awakeInterval) clearInterval(awakeInterval);
+    updateAwakeUI();
     awakeInterval = setInterval(() => {
       awakeRemainingSeconds--;
 
-      if (awakeTimerDigits) awakeTimerDigits.textContent = formatTime(awakeRemainingSeconds);
+      updateAwakeUI();
 
       const progress = (totalAwakeSeconds - awakeRemainingSeconds) / totalAwakeSeconds;
-      if (awakeProgressFill) awakeProgressFill.style.width = `${progress * 100}%`;
-
       if (window.powerNapAudio) {
         window.powerNapAudio.updateAwakeIntensity(progress);
       }
@@ -379,6 +386,79 @@ function initApp() {
       }
     }, 1000);
   }
+
+  function updateAwakeUI() {
+    if (awakeTimerDigits) awakeTimerDigits.textContent = formatTime(awakeRemainingSeconds);
+    const progressFraction = totalAwakeSeconds > 0 ? (totalAwakeSeconds - awakeRemainingSeconds) / totalAwakeSeconds : 0;
+    const pct = Math.min(100, Math.max(0, progressFraction * 100));
+    if (awakeProgressFill) awakeProgressFill.style.width = `${pct}%`;
+    if (awakeProgressKnob) awakeProgressKnob.style.left = `${pct}%`;
+  }
+
+  // --- Interactive Seekable Progress Bar Logic ---
+  function setupSeekableBar(containerEl, onSeekRatio) {
+    if (!containerEl) return;
+    let isDragging = false;
+
+    function getRatio(e) {
+      const rect = containerEl.getBoundingClientRect();
+      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+      let ratio = (clientX - rect.left) / rect.width;
+      return Math.max(0, Math.min(1, ratio));
+    }
+
+    function onPointerDown(e) {
+      isDragging = true;
+      containerEl.classList.add("dragging");
+      onSeekRatio(getRatio(e));
+      e.preventDefault();
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+      onSeekRatio(getRatio(e));
+      e.preventDefault();
+    }
+
+    function onPointerUp() {
+      if (isDragging) {
+        isDragging = false;
+        containerEl.classList.remove("dragging");
+      }
+    }
+
+    containerEl.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+
+    containerEl.addEventListener("touchstart", onPointerDown, { passive: false });
+    window.addEventListener("touchmove", onPointerMove, { passive: false });
+    window.addEventListener("touchend", onPointerUp);
+  }
+
+  setupSeekableBar(napProgressContainer, (ratio) => {
+    if (totalRestSeconds <= 0) return;
+    remainingSeconds = Math.round(totalRestSeconds * (1 - ratio));
+    remainingSeconds = Math.max(1, Math.min(totalRestSeconds, remainingSeconds));
+    updateNapUI();
+
+    const fadeTimeThreshold = Math.min(15, Math.floor(totalRestSeconds / 2));
+    if (remainingSeconds <= fadeTimeThreshold && window.powerNapAudio) {
+      window.powerNapAudio.fadeRestSound(fadeTimeThreshold);
+    }
+  });
+
+  setupSeekableBar(awakeProgressContainer, (ratio) => {
+    if (totalAwakeSeconds <= 0) return;
+    awakeRemainingSeconds = Math.round(totalAwakeSeconds * (1 - ratio));
+    awakeRemainingSeconds = Math.max(1, Math.min(totalAwakeSeconds, awakeRemainingSeconds));
+    updateAwakeUI();
+
+    if (window.powerNapAudio) {
+      window.powerNapAudio.updateAwakeIntensity(ratio);
+    }
+  });
 
   if (btnSkipAwake) {
     btnSkipAwake.addEventListener("click", () => {
