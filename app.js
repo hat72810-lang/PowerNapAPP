@@ -3,6 +3,18 @@
  */
 
 function initApp() {
+  // iOS Safari Global Audio Unlocker
+  const unlockiOSAudio = () => {
+    if (window.powerNapAudio && typeof window.powerNapAudio.init === "function") {
+      try {
+        window.powerNapAudio.init();
+      } catch (e) {}
+    }
+  };
+  document.addEventListener("touchstart", unlockiOSAudio, { passive: true });
+  document.addEventListener("touchend", unlockiOSAudio, { passive: true });
+  document.addEventListener("click", unlockiOSAudio, { passive: true });
+
   // App State Variables
   let currentStep = 1;
   let audioMode = "speaker"; // "speaker" | "earphone"

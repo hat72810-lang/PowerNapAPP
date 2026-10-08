@@ -24,6 +24,14 @@ export class PowerNapAudioEngine {
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
+    // iOS Safari Hardware Unlock Buffer
+    try {
+      const buffer = this.ctx.createBuffer(1, 1, 22050);
+      const source = this.ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(this.ctx.destination);
+      source.start(0);
+    } catch (e) {}
   }
 
   stop() {
@@ -70,7 +78,7 @@ export class PowerNapAudioEngine {
     const targetMasterGain = mode === 'speaker' ? 0.008 : 0.035;
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.setValueAtTime(0.0005, now);
-    this.masterGain.gain.exponentialRampToValueAtTime(targetMasterGain, now + 2);
+    this.masterGain.gain.linearRampToValueAtTime(targetMasterGain, now + 2);
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
@@ -161,8 +169,8 @@ export class PowerNapAudioEngine {
       osc.frequency.setValueAtTime(freq, now + idx * 0.15);
 
       gain.gain.setValueAtTime(0.001, now + idx * 0.15);
-      gain.gain.exponentialRampToValueAtTime(0.8, now + idx * 0.15 + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.15 + 2.5);
+      gain.gain.linearRampToValueAtTime(0.8, now + idx * 0.15 + 0.05);
+      gain.gain.linearRampToValueAtTime(0.0001, now + idx * 0.15 + 2.5);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
@@ -191,8 +199,8 @@ export class PowerNapAudioEngine {
       osc.frequency.setValueAtTime(freq, now + idx * 0.08);
 
       gain.gain.setValueAtTime(0.001, now + idx * 0.08);
-      gain.gain.exponentialRampToValueAtTime(targetPeak, now + idx * 0.08 + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.4);
+      gain.gain.linearRampToValueAtTime(targetPeak, now + idx * 0.08 + 0.03);
+      gain.gain.linearRampToValueAtTime(0.0001, now + idx * 0.08 + 0.4);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
