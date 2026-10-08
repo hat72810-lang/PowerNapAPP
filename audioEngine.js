@@ -23,7 +23,7 @@ class PowerNapAudioEngine {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       this.ctx = new AudioCtx();
     }
-    if (this.ctx.state === 'suspended') {
+    if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
       this.ctx.resume();
     }
     // iOS Safari Hardware Unlock Buffer
@@ -77,11 +77,11 @@ class PowerNapAudioEngine {
 
     const now = this.ctx.currentTime;
     
-    // マスターゲイン（スピーカー: 0.008 （変更なし） / イヤホン: 0.035 （適正ボリュームへアップ））
-    const targetMasterGain = mode === 'speaker' ? 0.008 : 0.035;
+    // マスターゲイン（iPhone・モバイル環境で十分に聴こえる適正音量: スピーカー 0.10 / イヤホン 0.12）
+    const targetMasterGain = mode === 'speaker' ? 0.10 : 0.12;
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(0.0005, now);
-    this.masterGain.gain.linearRampToValueAtTime(targetMasterGain, now + 2);
+    this.masterGain.gain.setValueAtTime(0.005, now);
+    this.masterGain.gain.linearRampToValueAtTime(targetMasterGain, now + 1.5);
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
@@ -97,7 +97,7 @@ class PowerNapAudioEngine {
       lfoGain.gain.setValueAtTime(0.1, now);
 
       const carrierGain = this.ctx.createGain();
-      carrierGain.gain.setValueAtTime(0.15, now);
+      carrierGain.gain.setValueAtTime(0.4, now);
 
       lfo.connect(lfoGain);
       lfoGain.connect(carrierGain.gain);
@@ -127,7 +127,7 @@ class PowerNapAudioEngine {
 
       const pannerLeft = this.createPanner(-1.0);
       const gainLeft = this.ctx.createGain();
-      gainLeft.gain.setValueAtTime(0.2, now);
+      gainLeft.gain.setValueAtTime(0.4, now);
 
       oscLeft.connect(gainLeft);
       gainLeft.connect(pannerLeft);
@@ -139,7 +139,7 @@ class PowerNapAudioEngine {
 
       const pannerRight = this.createPanner(1.0);
       const gainRight = this.ctx.createGain();
-      gainRight.gain.setValueAtTime(0.2, now);
+      gainRight.gain.setValueAtTime(0.4, now);
 
       oscRight.connect(gainRight);
       gainRight.connect(pannerRight);
@@ -155,7 +155,7 @@ class PowerNapAudioEngine {
   fadeRestSound(durationSeconds = 15) {
     if (!this.masterGain || !this.ctx) return;
     const now = this.ctx.currentTime;
-    const initialGain = this.mode === 'speaker' ? 0.008 : 0.035;
+    const initialGain = this.mode === 'speaker' ? 0.10 : 0.12;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value || initialGain, now);
     this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
