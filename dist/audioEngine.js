@@ -233,15 +233,18 @@ class PowerNapAudioEngine {
           const s528 = Math.sin(2 * Math.PI * 528 * t) * (0.35 + 0.35 * lfo);
           const s264 = Math.sin(2 * Math.PI * 264 * t) * 0.1;
           const val = Math.max(-1, Math.min(1, s528 + s264));
-          view.setInt16(offset, val < 0 ? val * 0x8000 : val * 0x7FFF, true);
+          const sampleInt = Math.floor(val < 0 ? val * 32768 : val * 32767);
+          view.setInt16(offset, sampleInt, true);
           offset += 2;
         } else {
           const sL = Math.sin(2 * Math.PI * 200 * t) * 0.45;
           const sR = Math.sin(2 * Math.PI * 204 * t) * 0.45;
           const valL = Math.max(-1, Math.min(1, sL));
           const valR = Math.max(-1, Math.min(1, sR));
-          view.setInt16(offset, valL < 0 ? valL * 0x8000 : valL * 0x7FFF, true);
-          view.setInt16(offset + 2, valR < 0 ? valR * 0x8000 : valR * 0x7FFF, true);
+          const sampleIntL = Math.floor(valL < 0 ? valL * 32768 : valL * 32767);
+          const sampleIntR = Math.floor(valR < 0 ? valR * 32768 : valR * 32767);
+          view.setInt16(offset, sampleIntL, true);
+          view.setInt16(offset + 2, sampleIntR, true);
           offset += 4;
         }
       }
