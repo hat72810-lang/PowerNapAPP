@@ -21,11 +21,22 @@ class PowerNapAudioEngine {
   init() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new AudioCtx();
+      this.ctx = new AudioCtx({ latencyHint: 'interactive' });
     }
     if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
       this.ctx.resume();
     }
+    // HTML5 Silent Element Unlock for iOS Safari
+    try {
+      if (!this.unlockElement) {
+        const audio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
+        audio.setAttribute("playsinline", "true");
+        audio.setAttribute("webkit-playsinline", "true");
+        this.unlockElement = audio;
+      }
+      this.unlockElement.play().catch(() => {});
+    } catch (e) {}
+
     // iOS Safari Hardware Unlock Buffer
     try {
       const buffer = this.ctx.createBuffer(1, 1, 22050);
@@ -77,11 +88,10 @@ class PowerNapAudioEngine {
 
     const now = this.ctx.currentTime;
     
-    // マスターゲイン（iPhone・モバイル環境で十分に聴こえる適正音量: スピーカー 0.10 / イヤホン 0.12）
-    const targetMasterGain = mode === 'speaker' ? 0.10 : 0.12;
+    // マスターゲイン（iPhone・モバイル環境でしっかりと聴こえる快適音量: スピーカー 0.25 / イヤホン 0.30）
+    const targetMasterGain = mode === 'speaker' ? 0.25 : 0.30;
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(0.005, now);
-    this.masterGain.gain.linearRampToValueAtTime(targetMasterGain, now + 1.5);
+    this.masterGain.gain.setValueAtTime(targetMasterGain, now);
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
@@ -94,10 +104,10 @@ class PowerNapAudioEngine {
       lfo.frequency.setValueAtTime(this.lfoSpeed, now);
 
       const lfoGain = this.ctx.createGain();
-      lfoGain.gain.setValueAtTime(0.1, now);
+      lfoGain.gain.setValueAtTime(0.2, now);
 
       const carrierGain = this.ctx.createGain();
-      carrierGain.gain.setValueAtTime(0.4, now);
+      carrierGain.gain.setValueAtTime(0.5, now);
 
       lfo.connect(lfoGain);
       lfoGain.connect(carrierGain.gain);
@@ -127,7 +137,7 @@ class PowerNapAudioEngine {
 
       const pannerLeft = this.createPanner(-1.0);
       const gainLeft = this.ctx.createGain();
-      gainLeft.gain.setValueAtTime(0.4, now);
+      gainLeft.gain.setValueAtTime(0.5, now);
 
       oscLeft.connect(gainLeft);
       gainLeft.connect(pannerLeft);
@@ -139,7 +149,7 @@ class PowerNapAudioEngine {
 
       const pannerRight = this.createPanner(1.0);
       const gainRight = this.ctx.createGain();
-      gainRight.gain.setValueAtTime(0.4, now);
+      gainRight.gain.setValueAtTime(0.5, now);
 
       oscRight.connect(gainRight);
       gainRight.connect(pannerRight);
@@ -155,7 +165,7 @@ class PowerNapAudioEngine {
   fadeRestSound(durationSeconds = 15) {
     if (!this.masterGain || !this.ctx) return;
     const now = this.ctx.currentTime;
-    const initialGain = this.mode === 'speaker' ? 0.10 : 0.12;
+    const initialGain = this.mode === 'speaker' ? 0.25 : 0.30;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value || initialGain, now);
     this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
