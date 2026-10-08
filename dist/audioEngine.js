@@ -29,7 +29,6 @@ class PowerNapAudioEngine {
     if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
       this.ctx.resume();
     }
-    this.preloadAudio();
     // HTML5 Silent Element Unlock for iOS Safari
     try {
       if (!this.unlockElement) {
@@ -53,7 +52,6 @@ class PowerNapAudioEngine {
 
   stop() {
     this.stopAlarmLoop();
-    this.stopHtml5Fallback();
     this.activeNodes.forEach(node => {
       try {
         if (node.stop) node.stop();
@@ -191,132 +189,8 @@ class PowerNapAudioEngine {
     }
   }
 
-  createAudioWavBlob(mode = 'speaker', lfoSpeed = 0.25, durationSec = 10) {
-    try {
-      const sampleRate = 22050;
-      const numSamples = sampleRate * durationSec;
-      const isStereo = mode === 'earphone';
-      const numChannels = isStereo ? 2 : 1;
-      const bytesPerSample = 2;
-      const blockAlign = numChannels * bytesPerSample;
-      const dataSize = numSamples * blockAlign;
-
-      const buffer = new Uint8Array(44 + dataSize);
-      const view = new DataView(buffer.buffer);
-
-      const writeStr = (off, s) => {
-        for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i));
-      };
-
-      writeStr(0, 'RIFF');
-      view.setUint32(4, 36 + dataSize, true);
-      writeStr(8, 'WAVE');
-      writeStr(12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true); // PCM
-      view.setUint16(22, numChannels, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate * blockAlign, true);
-      view.setUint16(32, blockAlign, true);
-      view.setUint16(34, 16, true);
-      writeStr(36, 'data');
-      view.setUint32(40, dataSize, true);
-
-      let offset = 44;
-      for (let i = 0; i < numSamples; i++) {
-        const t = i / sampleRate;
-        if (!isStereo) {
-          const lfo = 0.5 + 0.5 * Math.sin(2 * Math.PI * lfoSpeed * t);
-          const s528 = Math.sin(2 * Math.PI * 528 * t) * (0.35 + 0.35 * lfo);
-          const s264 = Math.sin(2 * Math.PI * 264 * t) * 0.1;
-          const val = Math.max(-1, Math.min(1, s528 + s264));
-          const sampleInt = Math.floor(val < 0 ? val * 32768 : val * 32767);
-          view.setInt16(offset, sampleInt, true);
-          offset += 2;
-        } else {
-          const sL = Math.sin(2 * Math.PI * 200 * t) * 0.45;
-          const sR = Math.sin(2 * Math.PI * 204 * t) * 0.45;
-          const valL = Math.max(-1, Math.min(1, sL));
-          const valR = Math.max(-1, Math.min(1, sR));
-          const sampleIntL = Math.floor(valL < 0 ? valL * 32768 : valL * 32767);
-          const sampleIntR = Math.floor(valR < 0 ? valR * 32768 : valR * 32767);
-          view.setInt16(offset, sampleIntL, true);
-          view.setInt16(offset + 2, sampleIntR, true);
-          offset += 4;
-        }
-      }
-      return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
-    } catch (e) {
-      return null;
-    }
-  }
-
-  preloadAudio() {
-    if (!this.speakerAudio) {
-      try {
-        const url = this.createAudioWavBlob('speaker', 0.25, 3);
-        if (url) {
-          const a = new Audio(url);
-          a.loop = true;
-          a.volume = 0.8;
-          a.setAttribute('playsinline', 'true');
-          a.setAttribute('webkit-playsinline', 'true');
-          this.speakerAudio = a;
-        }
-      } catch (e) {}
-    }
-    if (!this.earphoneAudio) {
-      try {
-        const url = this.createAudioWavBlob('earphone', 0.25, 3);
-        if (url) {
-          const a = new Audio(url);
-          a.loop = true;
-          a.volume = 0.8;
-          a.setAttribute('playsinline', 'true');
-          a.setAttribute('webkit-playsinline', 'true');
-          this.earphoneAudio = a;
-        }
-      } catch (e) {}
-    }
-  }
-
   unlockiOSAudio() {
     this.init();
-    this.preloadAudio();
-    if (this.speakerAudio) {
-      this.speakerAudio.play().then(() => {
-        if (!this.isPlaying) this.speakerAudio.pause();
-      }).catch(() => {});
-    }
-    if (this.earphoneAudio) {
-      this.earphoneAudio.play().then(() => {
-        if (!this.isPlaying) this.earphoneAudio.pause();
-      }).catch(() => {});
-    }
-  }
-
-  playHtml5Fallback(mode, lfoSpeed) {
-    this.stopHtml5Fallback();
-    this.preloadAudio();
-    const targetAudio = mode === 'speaker' ? this.speakerAudio : this.earphoneAudio;
-    if (targetAudio) {
-      this.html5Audio = targetAudio;
-      try {
-        this.html5Audio.volume = mode === 'speaker' ? 0.75 : 0.85;
-        this.html5Audio.currentTime = 0;
-        this.html5Audio.play().catch(() => {});
-      } catch (e) {}
-    }
-  }
-
-  stopHtml5Fallback() {
-    if (this.speakerAudio) {
-      try { this.speakerAudio.pause(); } catch (e) {}
-    }
-    if (this.earphoneAudio) {
-      try { this.earphoneAudio.pause(); } catch (e) {}
-    }
-    this.html5Audio = null;
   }
 
   playTransitionChime() {
