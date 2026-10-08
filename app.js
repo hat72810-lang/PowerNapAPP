@@ -5,9 +5,13 @@
 function initApp() {
   // iOS Safari Global Audio Unlocker
   const unlockiOSAudio = () => {
-    if (window.powerNapAudio && typeof window.powerNapAudio.init === "function") {
+    if (window.powerNapAudio) {
       try {
-        window.powerNapAudio.init();
+        if (typeof window.powerNapAudio.unlockiOSAudio === "function") {
+          window.powerNapAudio.unlockiOSAudio();
+        } else if (typeof window.powerNapAudio.init === "function") {
+          window.powerNapAudio.init();
+        }
       } catch (e) {}
     }
   };

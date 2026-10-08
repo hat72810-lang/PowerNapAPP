@@ -15,6 +15,8 @@ export class PowerNapAudioEngine {
     this.awakeOsc2 = null;
     this.alarmInterval = null;
     this.html5Audio = null;
+    this.speakerAudio = null;
+    this.earphoneAudio = null;
   }
 
   init() {
@@ -25,6 +27,7 @@ export class PowerNapAudioEngine {
     if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
       this.ctx.resume();
     }
+    this.preloadAudio();
     // HTML5 Silent Element Unlock for iOS Safari
     try {
       if (!this.unlockElement) {
@@ -244,29 +247,72 @@ export class PowerNapAudioEngine {
     }
   }
 
+  preloadAudio() {
+    if (!this.speakerAudio) {
+      try {
+        const url = this.createAudioWavBlob('speaker', 0.25, 3);
+        if (url) {
+          const a = new Audio(url);
+          a.loop = true;
+          a.volume = 0.8;
+          a.setAttribute('playsinline', 'true');
+          a.setAttribute('webkit-playsinline', 'true');
+          this.speakerAudio = a;
+        }
+      } catch (e) {}
+    }
+    if (!this.earphoneAudio) {
+      try {
+        const url = this.createAudioWavBlob('earphone', 0.25, 3);
+        if (url) {
+          const a = new Audio(url);
+          a.loop = true;
+          a.volume = 0.8;
+          a.setAttribute('playsinline', 'true');
+          a.setAttribute('webkit-playsinline', 'true');
+          this.earphoneAudio = a;
+        }
+      } catch (e) {}
+    }
+  }
+
+  unlockiOSAudio() {
+    this.init();
+    this.preloadAudio();
+    if (this.speakerAudio) {
+      this.speakerAudio.play().then(() => {
+        if (!this.isPlaying) this.speakerAudio.pause();
+      }).catch(() => {});
+    }
+    if (this.earphoneAudio) {
+      this.earphoneAudio.play().then(() => {
+        if (!this.isPlaying) this.earphoneAudio.pause();
+      }).catch(() => {});
+    }
+  }
+
   playHtml5Fallback(mode, lfoSpeed) {
     this.stopHtml5Fallback();
-    try {
-      const url = this.createAudioWavBlob(mode, lfoSpeed, 10);
-      if (url) {
-        this.html5Audio = new Audio(url);
-        this.html5Audio.loop = true;
-        this.html5Audio.volume = mode === 'speaker' ? 0.7 : 0.8;
-        this.html5Audio.setAttribute('playsinline', 'true');
-        this.html5Audio.setAttribute('webkit-playsinline', 'true');
+    this.preloadAudio();
+    const targetAudio = mode === 'speaker' ? this.speakerAudio : this.earphoneAudio;
+    if (targetAudio) {
+      this.html5Audio = targetAudio;
+      try {
+        this.html5Audio.volume = mode === 'speaker' ? 0.75 : 0.85;
+        this.html5Audio.currentTime = 0;
         this.html5Audio.play().catch(() => {});
-      }
-    } catch (e) {}
+      } catch (e) {}
+    }
   }
 
   stopHtml5Fallback() {
-    if (this.html5Audio) {
-      try {
-        this.html5Audio.pause();
-        this.html5Audio.src = '';
-      } catch (e) {}
-      this.html5Audio = null;
+    if (this.speakerAudio) {
+      try { this.speakerAudio.pause(); } catch (e) {}
     }
+    if (this.earphoneAudio) {
+      try { this.earphoneAudio.pause(); } catch (e) {}
+    }
+    this.html5Audio = null;
   }
 
   playTransitionChime() {
