@@ -14,6 +14,7 @@ export class PowerNapAudioEngine {
     this.awakeOsc1 = null;
     this.awakeOsc2 = null;
     this.alarmInterval = null;
+    this.html5Audio = null;
   }
 
   init() {
@@ -47,6 +48,7 @@ export class PowerNapAudioEngine {
 
   stop() {
     this.stopAlarmLoop();
+    this.stopHtml5Fallback();
     this.activeNodes.forEach(node => {
       try {
         if (node.stop) node.stop();
@@ -90,6 +92,9 @@ export class PowerNapAudioEngine {
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.setValueAtTime(targetMasterGain, now);
     this.masterGain.connect(this.ctx.destination);
+
+    // iOS Safari マナーモード貫通用 HTML5 メディアオーディオ再生
+    this.playHtml5Fallback(mode, this.lfoSpeed);
 
     if (mode === 'speaker') {
       const osc = this.ctx.createOscillator();
@@ -159,12 +164,109 @@ export class PowerNapAudioEngine {
   }
 
   fadeRestSound(durationSeconds = 15) {
-    if (!this.masterGain || !this.ctx) return;
-    const now = this.ctx.currentTime;
-    const initialGain = this.mode === 'speaker' ? 0.25 : 0.30;
-    this.masterGain.gain.cancelScheduledValues(now);
-    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value || initialGain, now);
-    this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
+    if (this.masterGain && this.ctx) {
+      const now = this.ctx.currentTime;
+      const initialGain = this.mode === 'speaker' ? 0.25 : 0.30;
+      this.masterGain.gain.cancelScheduledValues(now);
+      this.masterGain.gain.setValueAtTime(this.masterGain.gain.value || initialGain, now);
+      this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
+    }
+    if (this.html5Audio) {
+      try {
+        const startVol = this.html5Audio.volume;
+        const stepVol = startVol / (durationSeconds * 10);
+        const interval = setInterval(() => {
+          if (this.html5Audio && this.html5Audio.volume > stepVol) {
+            this.html5Audio.volume = Math.max(0, this.html5Audio.volume - stepVol);
+          } else {
+            clearInterval(interval);
+            this.stopHtml5Fallback();
+          }
+        }, 100);
+      } catch (e) {}
+    }
+  }
+
+  createAudioWavBlob(mode = 'speaker', lfoSpeed = 0.25, durationSec = 10) {
+    try {
+      const sampleRate = 22050;
+      const numSamples = sampleRate * durationSec;
+      const isStereo = mode === 'earphone';
+      const numChannels = isStereo ? 2 : 1;
+      const bytesPerSample = 2;
+      const blockAlign = numChannels * bytesPerSample;
+      const dataSize = numSamples * blockAlign;
+
+      const buffer = new Uint8Array(44 + dataSize);
+      const view = new DataView(buffer.buffer);
+
+      const writeStr = (off, s) => {
+        for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i));
+      };
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * blockAlign, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, dataSize, true);
+
+      let offset = 44;
+      for (let i = 0; i < numSamples; i++) {
+        const t = i / sampleRate;
+        if (!isStereo) {
+          const lfo = 0.5 + 0.5 * Math.sin(2 * Math.PI * lfoSpeed * t);
+          const s528 = Math.sin(2 * Math.PI * 528 * t) * (0.35 + 0.35 * lfo);
+          const s264 = Math.sin(2 * Math.PI * 264 * t) * 0.1;
+          const val = Math.max(-1, Math.min(1, s528 + s264));
+          view.setInt16(offset, val < 0 ? val * 0x8000 : val * 0x7FFF, true);
+          offset += 2;
+        } else {
+          const sL = Math.sin(2 * Math.PI * 200 * t) * 0.45;
+          const sR = Math.sin(2 * Math.PI * 204 * t) * 0.45;
+          const valL = Math.max(-1, Math.min(1, sL));
+          const valR = Math.max(-1, Math.min(1, sR));
+          view.setInt16(offset, valL < 0 ? valL * 0x8000 : valL * 0x7FFF, true);
+          view.setInt16(offset + 2, valR < 0 ? valR * 0x8000 : valR * 0x7FFF, true);
+          offset += 4;
+        }
+      }
+      return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  playHtml5Fallback(mode, lfoSpeed) {
+    this.stopHtml5Fallback();
+    try {
+      const url = this.createAudioWavBlob(mode, lfoSpeed, 10);
+      if (url) {
+        this.html5Audio = new Audio(url);
+        this.html5Audio.loop = true;
+        this.html5Audio.volume = mode === 'speaker' ? 0.7 : 0.8;
+        this.html5Audio.setAttribute('playsinline', 'true');
+        this.html5Audio.setAttribute('webkit-playsinline', 'true');
+        this.html5Audio.play().catch(() => {});
+      }
+    } catch (e) {}
+  }
+
+  stopHtml5Fallback() {
+    if (this.html5Audio) {
+      try {
+        this.html5Audio.pause();
+        this.html5Audio.src = '';
+      } catch (e) {}
+      this.html5Audio = null;
+    }
   }
 
   playTransitionChime() {
