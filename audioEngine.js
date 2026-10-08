@@ -433,14 +433,6 @@ class PowerNapAudioEngine {
       }
     }, 1200);
   }
-            }, 1200);
-          }
-        }
-      } else {
-        this.stopAlarmLoop();
-      }
-    }, 1200);
-  }
 
   stopAlarmLoop() {
     if (this.alarmInterval) {
