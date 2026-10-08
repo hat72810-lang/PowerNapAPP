@@ -95,40 +95,50 @@ export class PowerNapAudioEngine {
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
+      // メイン音響: 528Hz（ソルフェジオ）を柔らかく
       const osc = this.ctx.createOscillator();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(528, now);
 
+      // 主音のゲイン（音量を優しくマイルドに 0.25）
+      const carrierGain = this.ctx.createGain();
+      carrierGain.gain.setValueAtTime(0.25, now);
+
+      // LFO 揺らぎ: 鐘のような不快な音量変化にならないよう超微弱（0.03）な空気感のみに調整
       const lfo = this.ctx.createOscillator();
       lfo.type = 'sine';
       lfo.frequency.setValueAtTime(this.lfoSpeed, now);
 
       const lfoGain = this.ctx.createGain();
-      lfoGain.gain.setValueAtTime(0.2, now);
-
-      const carrierGain = this.ctx.createGain();
-      carrierGain.gain.setValueAtTime(0.5, now);
+      lfoGain.gain.setValueAtTime(0.03, now);
 
       lfo.connect(lfoGain);
       lfoGain.connect(carrierGain.gain);
 
+      // サブ音響: 264Hz（1オクターブ下の暖かく安定した低音）
       const subOsc = this.ctx.createOscillator();
       subOsc.type = 'sine';
       subOsc.frequency.setValueAtTime(264, now);
       const subGain = this.ctx.createGain();
-      subGain.gain.setValueAtTime(0.03, now);
+      subGain.gain.setValueAtTime(0.12, now);
+
+      // 高音の硬さをカットするローパスフィルター
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(700, now);
 
       osc.connect(carrierGain);
       subOsc.connect(subGain);
 
-      carrierGain.connect(this.masterGain);
-      subGain.connect(this.masterGain);
+      carrierGain.connect(filter);
+      subGain.connect(filter);
+      filter.connect(this.masterGain);
 
       osc.start(now);
       lfo.start(now);
       subOsc.start(now);
 
-      this.activeNodes.push(osc, lfo, lfoGain, carrierGain, subOsc, subGain);
+      this.activeNodes.push(osc, lfo, lfoGain, carrierGain, subOsc, subGain, filter);
     } else {
       const oscLeft = this.ctx.createOscillator();
       oscLeft.type = 'sine';
