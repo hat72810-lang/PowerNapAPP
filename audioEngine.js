@@ -99,9 +99,6 @@ class PowerNapAudioEngine {
     this.masterGain.gain.setValueAtTime(targetMasterGain, now);
     this.masterGain.connect(this.ctx.destination);
 
-    // iOS Safari マナーモード貫通用 HTML5 メディアオーディオ再生
-    this.playHtml5Fallback(mode, this.lfoSpeed);
-
     if (mode === 'speaker') {
       const osc = this.ctx.createOscillator();
       osc.type = 'sine';
