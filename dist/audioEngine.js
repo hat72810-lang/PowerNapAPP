@@ -80,6 +80,38 @@ class PowerNapAudioEngine {
     }
   }
 
+  createPinkNoiseBuffer(durationSeconds = 6) {
+    const sampleRate = this.ctx.sampleRate || 44100;
+    const frameCount = Math.floor(sampleRate * durationSeconds);
+    const buffer = this.ctx.createBuffer(2, frameCount, sampleRate);
+
+    for (let ch = 0; ch < 2; ch++) {
+      const data = buffer.getChannelData(ch);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < frameCount; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+        b6 = white * 0.115926;
+        data[i] = pink * 0.07;
+      }
+      // ループの継ぎ目でプチ音が出ないよう両端（150ms）をスムーズにクロスフェード
+      const fadeSamples = Math.floor(sampleRate * 0.15);
+      for (let i = 0; i < fadeSamples; i++) {
+        const ratio = i / fadeSamples;
+        const blended = data[i] * ratio + data[frameCount - 1 - (fadeSamples - 1 - i)] * (1 - ratio);
+        data[i] = blended;
+        data[frameCount - 1 - (fadeSamples - 1 - i)] = blended;
+      }
+    }
+    return buffer;
+  }
+
   startRestSound(mode = 'speaker', lfoSpeed = 0.25) {
     this.init();
     this.stop();
@@ -98,50 +130,80 @@ class PowerNapAudioEngine {
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
-      // メイン音響: 528Hz（ソルフェジオ）を柔らかく
+      // 1. 自然環境音（雨・優しい潮騒のようなピンクノイズによる思考マスキング）
+      const noiseBuffer = this.createPinkNoiseBuffer(6);
+      const noiseSource = this.ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
+
+      // 自然音用ローパスフィルター（850Hz: 耳に優しい雨音・葉擦れ・波音帯域）
+      const noiseFilter = this.ctx.createBiquadFilter();
+      noiseFilter.type = 'lowpass';
+      noiseFilter.frequency.setValueAtTime(850, now);
+
+      // 自然音のゆらぎLFO（呼吸のように緩やかな波の満ち引き 0.12Hz ≈ 8秒周期）
+      const swellLfo = this.ctx.createOscillator();
+      swellLfo.type = 'sine';
+      swellLfo.frequency.setValueAtTime(0.12, now);
+      const swellGain = this.ctx.createGain();
+      swellGain.gain.setValueAtTime(0.02, now);
+      swellLfo.connect(swellGain);
+
+      const noiseGain = this.ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.12, now);
+      swellGain.connect(noiseGain.gain);
+
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(this.masterGain);
+
+      // 2. 528Hz ソルフェジオ（背景に優しく溶け込むアンビエントドローン）
+      // 主音: 528Hz
       const osc = this.ctx.createOscillator();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(528, now);
 
-      // 主音のゲイン
-      const carrierGain = this.ctx.createGain();
-      carrierGain.gain.setValueAtTime(0.20, now);
-
-      // LFO 揺らぎ: 鐘のような不快な音量変化にならないよう超微弱（0.025）な空気感のみ
-      const lfo = this.ctx.createOscillator();
-      lfo.type = 'sine';
-      lfo.frequency.setValueAtTime(this.lfoSpeed, now);
-
-      const lfoGain = this.ctx.createGain();
-      lfoGain.gain.setValueAtTime(0.025, now);
-
-      lfo.connect(lfoGain);
-      lfoGain.connect(carrierGain.gain);
+      // デチューン音（528.35Hz: 単調な電子音感を打ち消し、シンギングボウルのような深みと共鳴）
+      const oscDetune = this.ctx.createOscillator();
+      oscDetune.type = 'sine';
+      oscDetune.frequency.setValueAtTime(528.35, now);
 
       // サブ音響: 264Hz（1オクターブ下の暖かく安定した低音）
       const subOsc = this.ctx.createOscillator();
       subOsc.type = 'sine';
       subOsc.frequency.setValueAtTime(264, now);
+
+      // トーンゲイン（前面に主張せず自然音の奥で響く音量バランス）
+      const toneGain = this.ctx.createGain();
+      toneGain.gain.setValueAtTime(0.08, now);
+
       const subGain = this.ctx.createGain();
-      subGain.gain.setValueAtTime(0.10, now);
+      subGain.gain.setValueAtTime(0.04, now);
 
-      // 高音の硬さをカットするローパスフィルター
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(680, now);
+      // トーン用ローパスフィルター（650Hz: 高音の硬さをカットし温かい質感に）
+      const toneFilter = this.ctx.createBiquadFilter();
+      toneFilter.type = 'lowpass';
+      toneFilter.frequency.setValueAtTime(650, now);
 
-      osc.connect(carrierGain);
+      osc.connect(toneGain);
+      oscDetune.connect(toneGain);
       subOsc.connect(subGain);
 
-      carrierGain.connect(filter);
-      subGain.connect(filter);
-      filter.connect(this.masterGain);
+      toneGain.connect(toneFilter);
+      subGain.connect(toneFilter);
+      toneFilter.connect(this.masterGain);
 
+      // 再生開始
+      noiseSource.start(now);
+      swellLfo.start(now);
       osc.start(now);
-      lfo.start(now);
+      oscDetune.start(now);
       subOsc.start(now);
 
-      this.activeNodes.push(osc, lfo, lfoGain, carrierGain, subOsc, subGain, filter);
+      this.activeNodes.push(
+        noiseSource, noiseFilter, swellLfo, swellGain, noiseGain,
+        osc, oscDetune, subOsc, toneGain, subGain, toneFilter
+      );
 
     } else {
       const oscLeft = this.ctx.createOscillator();
