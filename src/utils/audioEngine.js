@@ -117,74 +117,67 @@ export class PowerNapAudioEngine {
     return buffer;
   }
 
-  generateBreathCurve(samples = 128) {
-    const curve = new Float32Array(samples);
+  generateBreathCurves(samples = 128) {
+    const toneGainCurve = new Float32Array(samples);
+    const toneFilterCurve = new Float32Array(samples);
+    const noiseGainCurve = new Float32Array(samples);
+    const noiseFilterCurve = new Float32Array(samples);
+
     const inhaleDuration = 2.5;
     const exhaleDuration = 6.0;
     const totalDuration = inhaleDuration + exhaleDuration; // 8.5秒
-    const minGain = 0.35; // 吐き切ったときの基底音（35%残す）
-    const maxGain = 1.00; // 吸い切ったときのピーク音量
 
     for (let i = 0; i < samples; i++) {
       const t = (i / (samples - 1)) * totalDuration;
+      let sCurve;
       if (t <= inhaleDuration) {
-        // 吸うフェーズ（2.5秒）: S字（Half-Cosine）で滑らかに 0.35 -> 1.0 へ上昇
+        // 吸うフェーズ（2.5秒）: S字カーブで 0 -> 1 へ滑らかに立ち上がり
         const p = t / inhaleDuration;
-        const sCurve = 0.5 * (1 - Math.cos(Math.PI * p));
-        curve[i] = minGain + (maxGain - minGain) * sCurve;
+        sCurve = 0.5 * (1 - Math.cos(Math.PI * p));
       } else {
-        // 吐くフェーズ（6.0秒）: S字（Half-Cosine）で 1.0 -> 0.35 へじっくりフェードダウン
+        // 吐くフェーズ（6.0秒）: S字カーブで 1 -> 0 へ6秒かけてじっくりフェードダウン
         const p = (t - inhaleDuration) / exhaleDuration;
-        const sCurve = 0.5 * (1 + Math.cos(Math.PI * p));
-        curve[i] = minGain + (maxGain - minGain) * sCurve;
+        sCurve = 0.5 * (1 + Math.cos(Math.PI * p));
       }
+
+      // 528Hz 音量: 吐き切ったとき 0.30 〜 吸い切ったとき 1.00
+      toneGainCurve[i] = 0.30 + (1.00 - 0.30) * sCurve;
+      // 528Hz フィルター: 吐いたとき 550Hz 〜 吸ったとき 750Hz（自然に明るく開く）
+      toneFilterCurve[i] = 550 + (750 - 550) * sCurve;
+
+      // 潮騒自然音 音量: 波が引いたとき 0.03 〜 波が寄せてきたピーク 0.16
+      noiseGainCurve[i] = 0.03 + (0.16 - 0.03) * sCurve;
+      // 潮騒フィルター: 引いたとき 600Hz 〜 寄せたとき 950Hz（白波の広がり感）
+      noiseFilterCurve[i] = 600 + (950 - 600) * sCurve;
     }
-    return curve;
+    return { toneGainCurve, toneFilterCurve, noiseGainCurve, noiseFilterCurve };
   }
 
-  generateBreathFilterCurve(samples = 128) {
-    const curve = new Float32Array(samples);
-    const inhaleDuration = 2.5;
-    const exhaleDuration = 6.0;
-    const totalDuration = inhaleDuration + exhaleDuration;
-    const minFreq = 580; // 吐き切ったとき: 温かく深い音色
-    const maxFreq = 720; // 吸い切ったとき: 少し明るく開く音色
-
-    for (let i = 0; i < samples; i++) {
-      const t = (i / (samples - 1)) * totalDuration;
-      if (t <= inhaleDuration) {
-        const p = t / inhaleDuration;
-        const sCurve = 0.5 * (1 - Math.cos(Math.PI * p));
-        curve[i] = minFreq + (maxFreq - minFreq) * sCurve;
-      } else {
-        const p = (t - inhaleDuration) / exhaleDuration;
-        const sCurve = 0.5 * (1 + Math.cos(Math.PI * p));
-        curve[i] = minFreq + (maxFreq - minFreq) * sCurve;
-      }
-    }
-    return curve;
-  }
-
-  startBreathScheduler(breathGain, toneFilter, startTime) {
+  startBreathScheduler(toneGainNode, toneFilterNode, noiseGainNode, noiseFilterNode, startTime) {
     if (this.breathInterval) {
       clearInterval(this.breathInterval);
       this.breathInterval = null;
     }
 
     const cycleDuration = 8.5;
-    const breathCurve = this.generateBreathCurve(128);
-    const filterCurve = this.generateBreathFilterCurve(128);
+    const { toneGainCurve, toneFilterCurve, noiseGainCurve, noiseFilterCurve } = this.generateBreathCurves(128);
     let scheduledUntil = startTime;
 
     const scheduleAhead = () => {
-      if (!this.isPlaying || this.currentPhase !== 'rest' || !this.ctx || !breathGain) return;
+      if (!this.isPlaying || this.currentPhase !== 'rest' || !this.ctx || !toneGainNode) return;
       const currentTime = this.ctx.currentTime;
       // 常に最低30秒先（約4周期分）まで先回りスケジュールを維持
       while (scheduledUntil < currentTime + 30) {
         try {
-          breathGain.gain.setValueCurveAtTime(breathCurve, scheduledUntil, cycleDuration);
-          if (toneFilter) {
-            toneFilter.frequency.setValueCurveAtTime(filterCurve, scheduledUntil, cycleDuration);
+          toneGainNode.gain.setValueCurveAtTime(toneGainCurve, scheduledUntil, cycleDuration);
+          if (toneFilterNode) {
+            toneFilterNode.frequency.setValueCurveAtTime(toneFilterCurve, scheduledUntil, cycleDuration);
+          }
+          if (noiseGainNode) {
+            noiseGainNode.gain.setValueCurveAtTime(noiseGainCurve, scheduledUntil, cycleDuration);
+          }
+          if (noiseFilterNode) {
+            noiseFilterNode.frequency.setValueCurveAtTime(noiseFilterCurve, scheduledUntil, cycleDuration);
           }
         } catch (e) {
           break;
@@ -217,68 +210,54 @@ export class PowerNapAudioEngine {
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
-      // 1. 自然環境音（雨・優しい潮騒のようなピンクノイズによる思考マスキング）
+      // 1. 潮騒の自然環境音（波の満ち引き 8.5秒周期で呼吸と完全同期するピンクノイズ）
       const noiseBuffer = this.createPinkNoiseBuffer(6);
       const noiseSource = this.ctx.createBufferSource();
       noiseSource.buffer = noiseBuffer;
       noiseSource.loop = true;
 
-      // 自然音用ローパスフィルター（850Hz: 耳に優しい雨音・葉擦れ・波音帯域）
+      // 潮騒用ダイナミックローパスフィルター（波が寄せると開き、引くと静まる）
       const noiseFilter = this.ctx.createBiquadFilter();
       noiseFilter.type = 'lowpass';
-      noiseFilter.frequency.setValueAtTime(850, now);
+      noiseFilter.frequency.setValueAtTime(600, now);
 
-      // 自然音のゆらぎLFO（呼吸リズム 8.5秒周期 ≈ 0.1176Hz に同期した緩やかな潮騒の満ち引き）
-      const swellLfo = this.ctx.createOscillator();
-      swellLfo.type = 'sine';
-      swellLfo.frequency.setValueAtTime(1 / 8.5, now);
-      const swellGain = this.ctx.createGain();
-      swellGain.gain.setValueAtTime(0.02, now);
-      swellLfo.connect(swellGain);
-
+      // 潮騒用ダイナミックゲイン（波の満ち引きエンベロープ）
       const noiseGain = this.ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.12, now);
-      swellGain.connect(noiseGain.gain);
+      noiseGain.gain.setValueAtTime(0.03, now);
 
       noiseSource.connect(noiseFilter);
       noiseFilter.connect(noiseGain);
       noiseGain.connect(this.masterGain);
 
-      // 2. 528Hz ソルフェジオ（背景に優しく溶け込むアンビエントドローン）
-      // 主音: 528Hz
+      // 2. 528Hz ソルフェジオ（単一の澄んだ528Hz主音 ＋ 温かい264Hzサブハーモニクス）
+      // ※細かい「うなり（約2.8秒）」の発生源であったデチューン発振器を完全に撤廃し、純粋な528Hzに統一
       const osc = this.ctx.createOscillator();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(528, now);
-
-      // デチューン音（528.35Hz: 単調な電子音感を打ち消し、シンギングボウルのような深みと共鳴）
-      const oscDetune = this.ctx.createOscillator();
-      oscDetune.type = 'sine';
-      oscDetune.frequency.setValueAtTime(528.35, now);
 
       // サブ音響: 264Hz（1オクターブ下の暖かく安定した低音）
       const subOsc = this.ctx.createOscillator();
       subOsc.type = 'sine';
       subOsc.frequency.setValueAtTime(264, now);
 
-      // トーンゲイン（前面に主張せず自然音の奥で響く音量バランス）
+      // トーン基礎ゲイン
       const toneGain = this.ctx.createGain();
       toneGain.gain.setValueAtTime(0.08, now);
 
       const subGain = this.ctx.createGain();
       subGain.gain.setValueAtTime(0.04, now);
 
-      // トーン用ローパスフィルター（呼吸に合わせて開閉するフィルター）
+      // トーン用ダイナミックローパスフィルター（呼吸に合わせて開閉）
       const toneFilter = this.ctx.createBiquadFilter();
       toneFilter.type = 'lowpass';
-      toneFilter.frequency.setValueAtTime(580, now);
+      toneFilter.frequency.setValueAtTime(550, now);
 
       // 呼吸リズム専用のGainNode（8.5秒周期: 吸う2.5秒 / 吐く6.0秒）
       const breathGain = this.ctx.createGain();
-      breathGain.gain.setValueAtTime(0.35, now);
+      breathGain.gain.setValueAtTime(0.30, now);
       this.breathGain = breathGain;
 
       osc.connect(toneGain);
-      oscDetune.connect(toneGain);
       subOsc.connect(subGain);
 
       toneGain.connect(toneFilter);
@@ -288,18 +267,16 @@ export class PowerNapAudioEngine {
 
       // 再生開始
       noiseSource.start(now);
-      swellLfo.start(now);
       osc.start(now);
-      oscDetune.start(now);
       subOsc.start(now);
 
       this.activeNodes.push(
-        noiseSource, noiseFilter, swellLfo, swellGain, noiseGain,
-        osc, oscDetune, subOsc, toneGain, subGain, toneFilter, breathGain
+        noiseSource, noiseFilter, noiseGain,
+        osc, subOsc, toneGain, subGain, toneFilter, breathGain
       );
 
-      // 呼吸リズム（吸う2.5秒 / 吐く6.0秒）の先回りスケジューラー開始
-      this.startBreathScheduler(breathGain, toneFilter, now);
+      // 潮騒（波の音）と528Hzのうねりを完全同期させた呼吸スケジューラー開始
+      this.startBreathScheduler(breathGain, toneFilter, noiseGain, noiseFilter, now);
     } else {
       const oscLeft = this.ctx.createOscillator();
       oscLeft.type = 'sine';

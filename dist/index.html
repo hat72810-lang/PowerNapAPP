@@ -157,22 +157,27 @@
               </button>
             </div>
 
-            <!-- 528Hz 揺らぎスピード選択 (スピーカー時) -->
+            <!-- 潮騒 × 528Hz 呼吸リズムガイド (スピーカー時) -->
             <div id="lfo-speed-section" class="lfo-speed-section">
-              <div class="section-label" style="margin-top: 10px;">528Hz 揺らぎスピード</div>
-              <div class="lfo-speed-grid">
-                <button type="button" class="lfo-btn" data-lfo="0.125">
-                  <span class="lfo-val">ゆったり</span>
-                  <span class="lfo-unit">8秒に1回</span>
-                </button>
-                <button type="button" class="lfo-btn active" data-lfo="0.25">
-                  <span class="lfo-val">標準</span>
-                  <span class="lfo-unit">4秒に1回</span>
-                </button>
-                <button type="button" class="lfo-btn" data-lfo="0.5">
-                  <span class="lfo-val">やや速め</span>
-                  <span class="lfo-unit">2秒に1回</span>
-                </button>
+              <div class="section-label" style="margin-top: 10px;">🌊 潮騒 ＆ 呼吸リズム誘導</div>
+              <div class="breath-rhythm-card" style="background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 12px; padding: 12px 14px; margin-top: 6px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-weight: 700; color: var(--cyan); font-size: 0.92rem;">1周期 8.5秒の潮騒リズム</span>
+                  <span style="font-size: 0.72rem; background: rgba(0, 229, 255, 0.15); color: var(--cyan); padding: 2px 8px; border-radius: 10px; font-weight: 600;">副交感神経 優位</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.82rem;">
+                  <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px; border-radius: 8px; text-align: center;">
+                    <div style="color: #94a3b8; font-size: 0.72rem; margin-bottom: 2px;">波が寄せてくる時</div>
+                    <div style="color: #38bdf8; font-weight: 700;">吸う（2.5秒）</div>
+                  </div>
+                  <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px; border-radius: 8px; text-align: center;">
+                    <div style="color: #94a3b8; font-size: 0.72rem; margin-bottom: 2px;">波が遠のいて引く時</div>
+                    <div style="color: #34d399; font-weight: 700;">吐く（6.0秒）</div>
+                  </div>
+                </div>
+                <p style="margin: 8px 0 0; font-size: 0.73rem; color: #94a3b8; text-align: center; line-height: 1.4;">
+                  寄せては返す波の音と528Hzのうねりに合わせて息を吐き出すことで、思考を手放し自然と眠りに落ちます
+                </p>
               </div>
             </div>
 
@@ -392,8 +397,8 @@
     </main>
   </div>
 
-  <script src="mudras.js?v=20261015_breath85"></script>
-  <script src="audioEngine.js?v=20261015_breath85"></script>
-  <script src="app.js?v=20261015_breath85"></script>
+  <script src="mudras.js?v=20261017_wavebreath"></script>
+  <script src="audioEngine.js?v=20261017_wavebreath"></script>
+  <script src="app.js?v=20261017_wavebreath"></script>
 </body>
 </html>

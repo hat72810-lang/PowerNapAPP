@@ -267,8 +267,7 @@ function initApp() {
     if (timerDigitsEl) timerDigitsEl.textContent = formatTime(remainingSeconds);
     if (napProgressFill) napProgressFill.style.width = "0%";
     if (audioModeBadgeText) {
-      const lfoLabel = selectedLfoSpeed === 0.125 ? "0.125Hz ゆったり" : (selectedLfoSpeed === 0.5 ? "0.5Hz やや速め" : "0.25Hz 標準");
-      audioModeBadgeText.textContent = audioMode === "speaker" ? `528Hz (${lfoLabel}) 再生中` : "200/204Hz バイノーラル再生中";
+      audioModeBadgeText.textContent = audioMode === "speaker" ? "528Hz 潮騒呼吸リズム (8.5秒) 再生中" : "200/204Hz バイノーラル再生中";
     }
     
     // Circle Stroke Init (Radius 85 => Circumference = 534.07, if present)
