@@ -500,6 +500,58 @@ function initApp() {
       goToStep(1);
     });
   }
+
+  // --- In-App Manual Modal Logic ---
+  const manualModal = document.getElementById("manual-modal");
+  const btnOpenManual = document.getElementById("btn-open-manual");
+  const btnCloseManual = document.getElementById("btn-close-manual");
+  const btnManualBottomClose = document.getElementById("btn-manual-bottom-close");
+  const manualBackdrop = document.getElementById("manual-backdrop");
+  const navChips = document.querySelectorAll(".manual-nav-chips .nav-chip");
+
+  function openManualModal() {
+    if (manualModal) {
+      manualModal.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closeManualModal() {
+    if (manualModal) {
+      manualModal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  }
+
+  if (btnOpenManual) {
+    btnOpenManual.addEventListener("click", openManualModal);
+  }
+  if (btnCloseManual) {
+    btnCloseManual.addEventListener("click", closeManualModal);
+  }
+  if (btnManualBottomClose) {
+    btnManualBottomClose.addEventListener("click", closeManualModal);
+  }
+  if (manualBackdrop) {
+    manualBackdrop.addEventListener("click", closeManualModal);
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && manualModal && manualModal.classList.contains("active")) {
+      closeManualModal();
+    }
+  });
+
+  navChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const targetSelector = chip.getAttribute("data-target");
+      if (!targetSelector) return;
+      const targetEl = document.querySelector(targetSelector);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
 }
 
 if (document.readyState === "loading") {

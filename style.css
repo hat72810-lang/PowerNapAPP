@@ -1017,3 +1017,365 @@ body {
 .btn-secondary:active {
   background: rgba(255, 255, 255, 0.12);
 }
+
+/* ========================================================================== */
+/* In-App Manual Overlay Modal Styles                                        */
+/* ========================================================================== */
+.manual-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.manual-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.manual-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 6, 12, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.manual-modal-container {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 90dvh;
+  max-height: 90dvh;
+  background: rgba(14, 16, 28, 0.96);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 229, 255, 0.12);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.manual-modal.active .manual-modal-container {
+  transform: translateY(0);
+}
+
+/* Modal Sticky Header */
+.manual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.manual-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-main);
+}
+
+.manual-header-title svg {
+  color: var(--cyan);
+}
+
+.manual-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-sub);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.manual-close-btn:hover, .manual-close-btn:active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+/* Quick Nav Chips */
+.manual-nav-chips {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.manual-nav-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-sub);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-chip:hover, .nav-chip:active {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* Modal Body */
+.manual-body {
+  padding: 16px 16px calc(var(--safe-bottom) + 24px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  user-select: text;
+}
+
+.manual-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.manual-card.featured-card {
+  background: rgba(0, 229, 255, 0.04);
+  border-color: rgba(0, 229, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.05);
+}
+
+.manual-card-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(124, 77, 255, 0.15);
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.manual-card-tag.cyan-tag {
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.15);
+}
+
+.manual-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.manual-card p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.card-desc {
+  margin-bottom: 12px;
+}
+
+/* Wave Rhythm Diagram */
+.wave-rhythm-diagram {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.rhythm-phase-box {
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.inhale-box {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.exhale-box {
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+
+.phase-label {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  margin-bottom: 2px;
+}
+
+.inhale-box .phase-action {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.exhale-box .phase-action {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #34d399;
+}
+
+.phase-detail {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.manual-tip-box {
+  background: rgba(255, 234, 0, 0.06);
+  border-left: 3px solid var(--gold);
+  padding: 10px 12px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #f1f5f9;
+  margin-top: 10px;
+}
+
+.manual-highlight-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  margin-top: 10px;
+}
+
+/* Science & Step Items */
+.science-item {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.science-item:first-of-type {
+  border-top: none;
+  padding-top: 4px;
+}
+
+.science-item h4 {
+  font-size: 0.92rem;
+  color: var(--cyan);
+  margin-bottom: 4px;
+}
+
+.step-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.step-guide-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.step-num-badge {
+  background: var(--primary);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.step-guide-item strong {
+  font-size: 0.88rem;
+  color: #fff;
+  display: block;
+}
+
+.step-guide-item p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* FAQ */
+.faq-item {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.faq-item:first-of-type {
+  border-top: none;
+  padding-top: 4px;
+}
+
+.faq-q {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--cyan);
+  margin-bottom: 4px;
+}
+
+.faq-a {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+/* Open Manual Trigger in Step 1 */
+.btn-manual-trigger {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-manual-trigger:hover, .btn-manual-trigger:active {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: var(--cyan);
+  color: #fff;
+}
+
