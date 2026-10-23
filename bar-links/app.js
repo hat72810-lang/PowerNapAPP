@@ -1,5 +1,5 @@
 /**
- * BAR NOCTURNE & AMBER LOUNGE
+ * VIVE LA VIE!! - ビブラヴィ
  * Official Link Portal Interactions
  */
 
@@ -25,15 +25,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateBusinessStatus() {
     const now = new Date();
     const hour = now.getHours();
-    // Open from 18:00 to 03:00 (3 AM next morning)
-    const isOpen = (hour >= 18 || hour < 3);
+    // 営業時間：午後9時（21:00）〜 午前2時（翌2:00）
+    // 21時, 22時, 23時, 0時, 1時 が営業中
+    const isOpen = (hour >= 21 || hour < 2);
 
     if (isOpen) {
       statusPill.className = "status-pill open";
-      statusText.textContent = "TONIGHT OPEN 18:00 - 27:00 (L.O. 2:30)";
+      statusText.textContent = "TONIGHT OPEN 21:00 - 翌2:00 (L.O. 1:30)";
     } else {
       statusPill.className = "status-pill closed";
-      statusText.textContent = "CLOSED • 本日 18:00 OPEN";
+      statusText.textContent = "CLOSED • 本日 21:00 OPEN";
     }
   }
   updateBusinessStatus();
@@ -85,8 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnShare) {
     btnShare.addEventListener("click", async () => {
       const shareData = {
-        title: "BAR NOCTURNE & AMBER LOUNGE",
-        text: "静寂と琥珀に浸る大人の隠れ家バー。クラフトカクテルと上質なくつろぎを。",
+        title: "VIVE LA VIE!! - ビブラヴィ",
+        text: "VIVE LA VIE!! - ビブラヴィ。大人の隠れ家バー。クラフトカクテルと上質なくつろぎを。",
         url: window.location.href
       };
 
