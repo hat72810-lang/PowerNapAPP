@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>BAR NOCTURNE & AMBER | Official Link Portal</title>
+  <meta name="description" content="静寂と琥珀に浸る大人の隠れ家バー。クラフトカクテル、厳選ウイスキー、WEB席予約、アクセス情報のご案内。">
+  
+  <!-- Favicon & PWA meta -->
+  <meta name="theme-color" content="#08090c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="BAR NOCTURNE & AMBER | Official Link Portal">
+  <meta property="og:description" content="大人の隠れ家バー。クラフトカクテル、WEB即時予約、アクセス情報。">
+  <meta property="og:image" content="assets/hero_cocktail.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient Background Glows -->
+  <div class="ambient-glow ambient-top"></div>
+  <div class="ambient-glow ambient-bottom"></div>
+  <div class="ambient-stars"></div>
+
+  <!-- Main Mobile Container -->
+  <div class="portal-wrapper">
+
+    <!-- Top Action Bar -->
+    <header class="top-nav">
+      <div class="brand-tag">TOKYO • MINAMI-AOYAMA</div>
+      <button id="btn-share" class="icon-action-btn" aria-label="シェアする" title="このページをシェア">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Profile & Hero Header -->
+    <section class="hero-section">
+      <div class="avatar-container">
+        <div class="avatar-halo"></div>
+        <img src="assets/hero_cocktail.jpg" alt="Bar Nocturne & Amber Cocktail" class="avatar-image">
+        <div class="avatar-badge" title="Authentic Speakeasy">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <h1 class="bar-title">BAR NOCTURNE</h1>
+      <p class="bar-subtitle">&amp; AMBER LOUNGE</p>
+
+      <div class="concept-text">
+        <span>Craft Cocktails</span>
+        <span class="dot-divider">•</span>
+        <span>Rare Whisky</span>
+        <span class="dot-divider">•</span>
+        <span>Mellow Night</span>
+      </div>
+
+      <!-- Real-time Business Hours Status -->
+      <div id="status-pill" class="status-pill open">
+        <span class="status-dot"></span>
+        <span id="status-text" class="status-text">TONIGHT OPEN 18:00 - 27:00</span>
+      </div>
+    </section>
+
+    <!-- Vertical Link Group -->
+    <main class="links-group">
+
+      <!-- 1. WEB RESERVATION (Featured Primary) -->
+      <a href="https://example.com/reserve" target="_blank" rel="noopener" class="link-card link-featured" id="link-reserve">
+        <div class="card-shimmer"></div>
+        <div class="card-icon-box gold-glow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <path d="M8 14h.01"></path>
+            <path d="M12 14h.01"></path>
+            <path d="M16 14h.01"></path>
+            <path d="M8 18h.01"></path>
+            <path d="M12 18h.01"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-header-row">
+            <span class="card-title">WEB即時席予約</span>
+            <span class="card-badge gold">24h受付</span>
+          </div>
+          <p class="card-desc">当日の空席確認・カウンター席指定・記念日予約</p>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </a>
+
+      <!-- 2. OFFICIAL INSTAGRAM -->
+      <a href="https://instagram.com" target="_blank" rel="noopener" class="link-card" id="link-instagram">
+        <div class="card-icon-box insta-glow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-header-row">
+            <span class="card-title">公式 Instagram</span>
+            <span class="card-badge">Daily</span>
+          </div>
+          <p class="card-desc">今夜の限定カクテル・店内の雰囲気・ストーリー更新</p>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </a>
+
+      <!-- 3. ACCESS & GOOGLE MAPS -->
+      <div class="link-card-interactive" id="card-access">
+        <div class="link-card-top">
+          <div class="card-icon-box map-glow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div class="card-content">
+            <div class="card-header-row">
+              <span class="card-title">アクセス・道案内</span>
+              <span class="card-badge">徒歩2分</span>
+            </div>
+            <p class="card-desc">東京メトロ表参道駅 A4出口 徒歩2分 / 地下1F</p>
+          </div>
+        </div>
+        <div class="card-actions-row">
+          <a href="https://maps.google.com" target="_blank" rel="noopener" class="btn-sub-action">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+            </svg>
+            <span>Googleマップ</span>
+          </a>
+          <button type="button" class="btn-sub-action btn-copy-address" id="btn-copy-address">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>住所をコピー</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. DIGITAL MENU (In-Page Modal) -->
+      <button type="button" class="link-card" id="btn-open-menu">
+        <div class="card-icon-box glass-glow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            <!-- Cocktail glass icon -->
+            <path d="M8 21h8"></path>
+            <path d="M12 15v6"></path>
+            <path d="M17 4l-5 6-5-6z"></path>
+            <path d="M7 4h10"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-header-row">
+            <span class="card-title">ドリンク＆フードメニュー</span>
+            <span class="card-badge">Menu</span>
+          </div>
+          <p class="card-desc">シグネチャーカクテル・モルトウイスキー・自家製ショコラ</p>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </button>
+
+      <!-- 5. OFFICIAL LINE -->
+      <a href="https://line.me" target="_blank" rel="noopener" class="link-card" id="link-line">
+        <div class="card-icon-box line-glow">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.365 9.864c0-4.041-4.195-7.327-9.365-7.327S.635 5.823.635 9.864c0 3.619 3.228 6.643 7.587 7.214.296.064.698.196.8.449.091.229.06.587.029.818l-.132.793c-.04.24-.187.939.822.512 1.009-.427 5.447-3.208 7.433-5.492 1.488-1.71 2.191-3.447 2.191-4.294z"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-header-row">
+            <span class="card-title">公式LINE（会員・限定案内）</span>
+            <span class="card-badge line">VIP</span>
+          </div>
+          <p class="card-desc">希少ボトルの入荷通知・シークレット試飲会のご案内</p>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </a>
+
+      <!-- 6. PHONE CALL -->
+      <a href="tel:0312345678" class="link-card" id="link-phone">
+        <div class="card-icon-box phone-glow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-header-row">
+            <span class="card-title">お電話でのお問い合わせ</span>
+            <span class="card-badge">Tel</span>
+          </div>
+          <p class="card-desc">03-1234-5678（17:00〜翌3:00 / 当日の直前空席確認など）</p>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </a>
+
+    </main>
+
+    <!-- Bar Details & System Info (Accordion style / Elegant Card) -->
+    <section class="info-card">
+      <div class="info-header" id="btn-toggle-info">
+        <div class="info-title-box">
+          <span class="info-icon">🏛️</span>
+          <span class="info-title">店舗情報・システム</span>
+        </div>
+        <span class="info-arrow" id="info-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
+      </div>
+
+      <div class="info-body" id="info-body">
+        <dl class="info-dl">
+          <div class="info-row">
+            <dt>店名</dt>
+            <dd>BAR NOCTURNE &amp; AMBER LOUNGE</dd>
+          </div>
+          <div class="info-row">
+            <dt>住所</dt>
+            <dd>
+              〒107-0062<br>
+              東京都港区南青山5-X-X 青山ラグジュアリープレイス B1F
+            </dd>
+          </div>
+          <div class="info-row">
+            <dt>営業時間</dt>
+            <dd>
+              月〜土：18:00 〜 翌3:00（L.O. 2:30）<br>
+              日・祝：18:00 〜 24:00（L.O. 23:30）
+            </dd>
+          </div>
+          <div class="info-row">
+            <dt>定休日</dt>
+            <dd>年中無休（年末年始を除く）</dd>
+          </div>
+          <div class="info-row">
+            <dt>席数</dt>
+            <dd>18席（無垢一枚板カウンター 10席 / ボックスソファー 8席）</dd>
+          </div>
+          <div class="info-row">
+            <dt>チャージ</dt>
+            <dd>テーブルチャージ ¥1,000 / サービス料なし</dd>
+          </div>
+          <div class="info-row">
+            <dt>決済方法</dt>
+            <dd>現金 / クレジットカード（VISA, Master, JCB, AMEX, Diners）/ 交通系IC / PayPay</dd>
+          </div>
+          <div class="info-row">
+            <dt>喫煙</dt>
+            <dd>全席完全禁煙（専用スモーキングブース完備）</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="portal-footer">
+      <div class="footer-cocktail-icon">🍸</div>
+      <p class="copyright">© 2026 BAR NOCTURNE &amp; AMBER. All Rights Reserved.</p>
+    </footer>
+
+  </div>
+
+  <!-- ================= In-Page Menu Modal ================= -->
+  <div id="menu-modal" class="menu-modal">
+    <div id="modal-backdrop" class="modal-backdrop"></div>
+    <div class="modal-sheet">
+      <div class="modal-drag-indicator"></div>
+      
+      <div class="modal-header">
+        <div>
+          <span class="modal-kicker">CURATED DRINKS &amp; BITES</span>
+          <h2 class="modal-title">MENU HIGHLIGHTS</h2>
+        </div>
+        <button id="btn-close-modal" class="modal-close-btn" aria-label="閉じる">✕</button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Category: Signature Cocktails -->
+        <div class="menu-category">
+          <div class="category-header">
+            <span class="category-icon">🍸</span>
+            <h3>Signature Craft Cocktails</h3>
+          </div>
+          <ul class="menu-list">
+            <li class="menu-item">
+              <div class="item-main">
+                <span class="item-name">スモークド・オールドファッションド</span>
+                <span class="item-price">¥1,900</span>
+              </div>
+              <p class="item-desc">ヒッコリーチップのスモークを閉じ込め、チェリーブランデーとビターズで仕上げた芳醇な一杯。</p>
+            </li>
+            <li class="menu-item">
+              <div class="item-main">
+                <span class="item-name">白トリュフ＆季の美 マティーニ</span>
+                <span class="item-price">¥2,200</span>
+              </div>
+              <p class="item-desc">京都クラフトジン「季の美」に最高級イタリア産白トリュフの香りをインフュージョンした究極のショートカクテル。</p>
+            </li>
+            <li class="menu-item">
+              <div class="item-main">
+                <span class="item-name">季節の完熟フルーツ・シャンパーニュカクテル</span>
+                <span class="item-price">¥2,400</span>
+              </div>
+              <p class="item-desc">厳選した旬の果実（白桃、巨峰、あまおう等）とヴーヴ・クリコを合わせた贅沢なフレッシュカクテル。</p>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Category: Whisky Selection -->
+        <div class="menu-category">
+          <div class="category-header">
+            <span class="category-icon">🥃</span>
+            <h3>Single Malt &amp; Vintage Whisky</h3>
+          </div>
+          <ul class="menu-list">
+            <li class="menu-item">
+              <div class="item-main">
+                <span class="item-name">山崎 12年 / 白州 12年</span>
+                <span class="item-price">¥2,200〜</span>
+              </div>
+              <p class="item-desc">日本のウイスキー技術の粋を集めた繊細で豊かなアロマ。ストレート、または手削り丸氷のロックで。</p>
+            </li>
+            <li class="menu-item">
+              <div class="item-main">
+                <span class="item-name">ボウモア 18年 (Islay)</span>
+                <span class="item-price">¥2,600</span>
+              </div>
+              <p class="item-desc">アイラの女王と呼ばれる、スモーキーさと完熟フルーツの甘美なハーモニー。</p>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Category: Bar Bites -->
+        <div class="menu-category">
+          <div class="category-header">
+            <span class="category-icon">🍫</span>
+            <h3>Bar Bites &amp; Sweets</h3>
+          </div>
+          <ul class="menu-list">
+            <li class="menu-item">
+              <div class="item-main">
+                <span class="item-name">自家製 生クラフトショコラ（ウイスキー仕込み）</span>
+                <span class="item-price">¥1,200</span>
+              </div>
+              <p class="item-desc">シングルモルトの芳香を練り込んだ、舌の上でとろけるショコラティエ特製トリュフ。</p>
+            </li>
+            <li class="menu-item">
+              <div class="item-main">
+                <span class="item-name">スペイン産イベリコ豚ベジョータの生ハム</span>
+                <span class="item-price">¥1,800</span>
+              </div>
+              <p class="item-desc">オーダーごとに極薄に削り出す、ナッツの香りと極上の脂の甘み。</p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="menu-note">
+          ※ 上記以外にも300種類以上のウイスキー、季節のカクテルを取り揃えております。<br>
+          ※ メニュー価格は全て税込表示です。
+        </div>
+
+        <button type="button" class="btn-primary-reserve" id="btn-modal-reserve">
+          <span>🍸 この席をWEB予約する</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span class="toast-icon">✨</span>
+    <span id="toast-message" class="toast-message">住所をコピーしました</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
