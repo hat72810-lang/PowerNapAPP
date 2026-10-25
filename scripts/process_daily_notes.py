@@ -2,23 +2,44 @@
 # -*- coding: utf-8 -*-
 
 """
-Daily Markdown Note Batch Processor
-Rule 1: Target files matching "YYYY-MM-DD <suffix>.md" (skip pure "YYYY-MM-DD.md").
-Rule 2: Extract text from 11th character onwards (strip leading spaces), prepend "# <extracted_text>\n\n".
-Rule 3: Rename to "YYYY-MM-DD.md".
-Rule 4: If "YYYY-MM-DD.md" already exists, append to it and remove the long-named file.
+Daily Markdown Note Batch Processor v2
+Rule 1: Target files matching "YYYY-MM-DD <suffix>.md" or "YYYY-MM-DD_<suffix>.md" (skip pure "YYYY-MM-DD.md").
+Rule 2: Extract text from 11th character onwards (strip leading spaces and underscores), create "# <extracted_text>".
+Rule 3: If YAML frontmatter exists ("---" at line 1 to closing "---"), insert heading directly after closing "---".
+        If no frontmatter, insert heading at line 1.
+Rule 4: Rename to "YYYY-MM-DD.md".
+Rule 5: If "YYYY-MM-DD.md" already exists, append newline + heading + body (excluding frontmatter) to existing file,
+        and delete the original long-named file.
 """
 
 import os
 import sys
 import re
-import shutil
 import zipfile
 import datetime
 import unicodedata
 
 DAILY_DIR = "/Users/takahashinorihiko/Library/Mobile Documents/iCloud~md~obsidian/Documents/My Note Matio/Daily"
 PURE_DATE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})\.md$")
+
+def split_frontmatter(content):
+    """
+    Splits content into (frontmatter_block, body_content).
+    frontmatter_block includes opening '---' to closing '---' with its trailing newline.
+    If no frontmatter, frontmatter_block is "" and body_content is content.
+    """
+    lines = content.splitlines(keepends=True)
+    if lines and lines[0].strip() == "---":
+        closing_idx = -1
+        for i in range(1, len(lines)):
+            if lines[i].strip() == "---":
+                closing_idx = i
+                break
+        if closing_idx != -1:
+            frontmatter_block = "".join(lines[:closing_idx + 1])
+            body_content = "".join(lines[closing_idx + 1:])
+            return frontmatter_block, body_content
+    return "", content
 
 def get_target_files(daily_dir):
     files = sorted(os.listdir(daily_dir))
@@ -38,7 +59,8 @@ def get_target_files(daily_dir):
             else:
                 # 11th char onwards
                 rest = name_no_ext[10:]
-                extracted_text = rest.lstrip()
+                # Strip leading half-width/full-width spaces and underscores
+                extracted_text = re.sub(r"^[ \u3000_]+", "", rest)
                 targets.append({
                     "orig_filename": f,
                     "date": norm_date,
@@ -63,9 +85,14 @@ def run_dry_run(daily_dir):
         seen_dests.add(dest)
         
     print(f"[DRY-RUN] Conflicts requiring merge: {len(conflicts)}")
-    for c in conflicts:
-        print(f"  - {c['orig_filename']} -> merge into existing {c['dest_filename']}")
-    print()
+    fm_count = 0
+    for t in targets:
+        path = os.path.join(daily_dir, t["orig_filename"])
+        with open(path, "r", encoding="utf-8", errors="replace") as fp:
+            fm, _ = split_frontmatter(fp.read())
+            if fm:
+                fm_count += 1
+    print(f"[DRY-RUN] Target files with YAML frontmatter: {fm_count}\n")
 
 def create_backup(daily_dir):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -98,30 +125,35 @@ def execute_batch(daily_dir, make_backup=True):
         if not os.path.exists(orig_path):
             continue
             
-        with open(orig_path, "r", encoding="utf-8") as f:
+        with open(orig_path, "r", encoding="utf-8", errors="replace") as f:
             orig_content = f.read()
             
-        heading = f"# {t['extracted_text']}"
-        new_block = f"{heading}\n\n{orig_content.lstrip()}" if orig_content.strip() else f"{heading}\n"
+        fm_block, body_content = split_frontmatter(orig_content)
+        heading = f"# {t['extracted_text']}" if t['extracted_text'] else ""
         
         if os.path.exists(dest_path) and os.path.abspath(orig_path) != os.path.abspath(dest_path):
-            # Rule 4: Append to existing file and delete original
-            with open(dest_path, "r", encoding="utf-8") as f:
+            # Rule 5: If destination exists, append to it excluding incoming frontmatter
+            with open(dest_path, "r", encoding="utf-8", errors="replace") as f:
                 existing_content = f.read()
                 
-            merged_content = existing_content.rstrip() + "\n\n" + new_block
+            block_to_append = f"{heading}\n\n{body_content.lstrip()}" if heading else body_content.lstrip()
+            merged_content = existing_content.rstrip() + "\n\n" + block_to_append
+            
             with open(dest_path, "w", encoding="utf-8") as f:
                 f.write(merged_content)
                 
             os.remove(orig_path)
-            print(f"[MERGED] {t['orig_filename']} -> {t['dest_filename']}")
             merged_count += 1
         else:
-            # Rule 2 & 3: Prepend heading and rename
+            # Rule 3 & 4: Insert heading (after frontmatter if present, else at line 1) and rename
+            if fm_block:
+                new_content = f"{fm_block.rstrip()}\n\n{heading}\n\n{body_content.lstrip()}" if heading else f"{fm_block.rstrip()}\n\n{body_content.lstrip()}"
+            else:
+                new_content = f"{heading}\n\n{body_content.lstrip()}" if heading else body_content
+                
             with open(orig_path, "w", encoding="utf-8") as f:
-                f.write(new_block)
+                f.write(new_content)
             os.rename(orig_path, dest_path)
-            print(f"[RENAMED] {t['orig_filename']} -> {t['dest_filename']}")
             renamed_count += 1
             
         processed_count += 1
