@@ -105,7 +105,7 @@ class PowerNapAudioEngine {
         b5 = -0.7616 * b5 - white * 0.0168980;
         const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
         b6 = white * 0.115926;
-        data[i] = pink * 0.07;
+        data[i] = pink * 0.28;
       }
       // ループの継ぎ目でプチ音が出ないよう両端（150ms）をスムーズにクロスフェード
       const fadeSamples = Math.floor(sampleRate * 0.15);
@@ -142,15 +142,15 @@ class PowerNapAudioEngine {
         sCurve = 0.5 * (1 + Math.cos(Math.PI * p));
       }
 
-      // 528Hz 音量: 吐き切ったとき 0.30 〜 吸い切ったとき 1.00
-      toneGainCurve[i] = 0.30 + (1.00 - 0.30) * sCurve;
-      // 528Hz フィルター: 吐いたとき 550Hz 〜 吸ったとき 750Hz（自然に明るく開く）
-      toneFilterCurve[i] = 550 + (750 - 550) * sCurve;
+      // 528Hz 音量: 吐き切ったとき 0.18 〜 吸い切ったとき 0.50（背景に優しく溶け込む）
+      toneGainCurve[i] = 0.18 + (0.50 - 0.18) * sCurve;
+      // 528Hz フィルター: 500Hz 〜 680Hz
+      toneFilterCurve[i] = 500 + (680 - 500) * sCurve;
 
-      // 潮騒自然音 音量: 波が引いたとき 0.03 〜 波が寄せてきたピーク 0.16
-      noiseGainCurve[i] = 0.03 + (0.16 - 0.03) * sCurve;
-      // 潮騒フィルター: 引いたとき 600Hz 〜 寄せたとき 950Hz（白波の広がり感）
-      noiseFilterCurve[i] = 600 + (950 - 600) * sCurve;
+      // 潮騒自然音 音量: 引いたとき 0.18 〜 寄せたとき 0.75（主役の豊かな包摂感）
+      noiseGainCurve[i] = 0.18 + (0.75 - 0.18) * sCurve;
+      // 潮騒フィルター: 引いたとき 320Hz（深い轟き） 〜 寄せたとき 1350Hz（白波の広がりとエア感）
+      noiseFilterCurve[i] = 320 + (1350 - 320) * sCurve;
     }
     return { toneGainCurve, toneFilterCurve, noiseGainCurve, noiseFilterCurve };
   }
@@ -166,7 +166,7 @@ class PowerNapAudioEngine {
     let scheduledUntil = startTime;
 
     const scheduleAhead = () => {
-      if (!this.isPlaying || this.currentPhase !== 'rest' || !this.ctx || !toneGainNode) return;
+      if (!this.isPlaying || (this.currentPhase !== 'rest' && this.currentPhase !== 'preview_rest') || !this.ctx || !toneGainNode) return;
       const currentTime = this.ctx.currentTime;
       // 常に最低30秒先（約4周期分）まで先回りスケジュールを維持
       while (scheduledUntil < currentTime + 30) {
@@ -206,14 +206,14 @@ class PowerNapAudioEngine {
 
     const now = this.ctx.currentTime;
     
-    // マスターゲイン（仮眠中はさらに静かで優しい音量: スピーカー 0.05 / イヤホン 0.06）
+    // マスターゲイン（スピーカー 0.05 / イヤホン 0.06）
     const targetMasterGain = mode === 'speaker' ? 0.05 : 0.06;
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.setValueAtTime(targetMasterGain, now);
     this.masterGain.connect(this.ctx.destination);
 
     if (mode === 'speaker') {
-      // 1. 潮騒の自然環境音（波の満ち引き 8.5秒周期で呼吸と完全同期するピンクノイズ）
+      // 1. 潮騒の自然環境音（主役：深く豊かな波音、320Hz〜1350Hzダイナミック開閉）
       const noiseBuffer = this.createPinkNoiseBuffer(6);
       const noiseSource = this.ctx.createBufferSource();
       noiseSource.buffer = noiseBuffer;
@@ -222,18 +222,18 @@ class PowerNapAudioEngine {
       // 潮騒用ダイナミックローパスフィルター（波が寄せると開き、引くと静まる）
       const noiseFilter = this.ctx.createBiquadFilter();
       noiseFilter.type = 'lowpass';
-      noiseFilter.frequency.setValueAtTime(600, now);
+      noiseFilter.frequency.setValueAtTime(320, now);
+      noiseFilter.Q.setValueAtTime(0.7, now); // 自然な波のボディ感
 
       // 潮騒用ダイナミックゲイン（波の満ち引きエンベロープ）
       const noiseGain = this.ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.03, now);
+      noiseGain.gain.setValueAtTime(0.18, now);
 
       noiseSource.connect(noiseFilter);
       noiseFilter.connect(noiseGain);
       noiseGain.connect(this.masterGain);
 
-      // 2. 528Hz ソルフェジオ（単一の澄んだ528Hz主音 ＋ 温かい264Hzサブハーモニクス）
-      // ※細かい「うなり（約2.8秒）」の発生源であったデチューン発振器を完全に撤廃し、純粋な528Hzに統一
+      // 2. 528Hz ソルフェジオ（背景に従として優しく溶け込む音量バランスへ調整）
       const osc = this.ctx.createOscillator();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(528, now);
@@ -243,21 +243,21 @@ class PowerNapAudioEngine {
       subOsc.type = 'sine';
       subOsc.frequency.setValueAtTime(264, now);
 
-      // トーン基礎ゲイン
+      // トーン基礎ゲイン（波が主役になるよう控えめな背景音量へ調整）
       const toneGain = this.ctx.createGain();
-      toneGain.gain.setValueAtTime(0.08, now);
+      toneGain.gain.setValueAtTime(0.026, now);
 
       const subGain = this.ctx.createGain();
-      subGain.gain.setValueAtTime(0.04, now);
+      subGain.gain.setValueAtTime(0.012, now);
 
       // トーン用ダイナミックローパスフィルター（呼吸に合わせて開閉）
       const toneFilter = this.ctx.createBiquadFilter();
       toneFilter.type = 'lowpass';
-      toneFilter.frequency.setValueAtTime(550, now);
+      toneFilter.frequency.setValueAtTime(500, now);
 
       // 呼吸リズム専用のGainNode（8.5秒周期: 吸う2.5秒 / 吐く6.0秒）
       const breathGain = this.ctx.createGain();
-      breathGain.gain.setValueAtTime(0.30, now);
+      breathGain.gain.setValueAtTime(0.18, now);
       this.breathGain = breathGain;
 
       osc.connect(toneGain);
@@ -320,6 +320,17 @@ class PowerNapAudioEngine {
       this.masterGain.gain.cancelScheduledValues(now);
       this.masterGain.gain.setValueAtTime(this.masterGain.gain.value || initialGain, now);
       this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
+    }
+  }
+
+  togglePreviewRestSound() {
+    if (this.isPlaying && this.currentPhase === 'preview_rest') {
+      this.stop();
+      return false;
+    } else {
+      this.startRestSound('speaker', 0.25);
+      this.currentPhase = 'preview_rest';
+      return true;
     }
   }
 

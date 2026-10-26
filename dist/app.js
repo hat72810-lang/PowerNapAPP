@@ -55,6 +55,7 @@ function initApp() {
   const btnModeEarphone = document.getElementById("btn-mode-earphone");
   const durationBtns = document.querySelectorAll(".duration-btn");
   const btnGotoMudra = document.getElementById("btn-goto-mudra");
+  const btnPreviewWave = document.getElementById("btn-preview-wave");
 
   // Step 3 Controls (瞑想とリラックス)
   const btnStartNap = document.getElementById("btn-start-nap");
@@ -103,8 +104,21 @@ function initApp() {
   const btnHeaderHome = document.getElementById("btn-header-home");
   const brandLogoEl = document.querySelector(".brand-logo");
 
+  // --- Wave Preview Helper ---
+  function stopWavePreview() {
+    if (window.powerNapAudio && window.powerNapAudio.currentPhase === 'preview_rest') {
+      window.powerNapAudio.stop();
+    }
+    if (btnPreviewWave) {
+      btnPreviewWave.classList.remove("playing");
+      const txt = btnPreviewWave.querySelector(".preview-btn-text");
+      if (txt) txt.textContent = "潮騒と528Hzを試聴する";
+    }
+  }
+
   // --- Reset & Return to Home ---
   function resetToHome() {
+    stopWavePreview();
     if (timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
@@ -129,6 +143,9 @@ function initApp() {
 
   // --- Navigation & View Switching ---
   function goToStep(stepNumber) {
+    if (stepNumber !== 2) {
+      stopWavePreview();
+    }
     currentStep = stepNumber;
     stepIndicatorEl.textContent = `STEP ${stepNumber} / 7`;
 
@@ -211,6 +228,7 @@ function initApp() {
 
   if (btnModeEarphone) {
     btnModeEarphone.addEventListener("click", () => {
+      stopWavePreview();
       audioMode = "earphone";
       btnModeEarphone.classList.add("active");
       if (btnModeSpeaker) btnModeSpeaker.classList.remove("active");
@@ -244,6 +262,22 @@ function initApp() {
       }
     });
   });
+
+  if (btnPreviewWave) {
+    btnPreviewWave.addEventListener("click", () => {
+      if (!window.powerNapAudio) return;
+      const isPlaying = window.powerNapAudio.togglePreviewRestSound();
+      if (isPlaying) {
+        btnPreviewWave.classList.add("playing");
+        const txt = btnPreviewWave.querySelector(".preview-btn-text");
+        if (txt) txt.textContent = "試聴を停止する";
+      } else {
+        btnPreviewWave.classList.remove("playing");
+        const txt = btnPreviewWave.querySelector(".preview-btn-text");
+        if (txt) txt.textContent = "潮騒と528Hzを試聴する";
+      }
+    });
+  }
 
   if (btnGotoMudra) {
     btnGotoMudra.addEventListener("click", () => {

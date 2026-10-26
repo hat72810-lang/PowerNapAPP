@@ -39,7 +39,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=20261001_v4">
+  <link rel="stylesheet" href="style.css?v=20261026_wave">
 </head>
 <body>
 
@@ -182,9 +182,20 @@
                     <div style="color: #34d399; font-weight: 700;">吐く（6.0秒）</div>
                   </div>
                 </div>
-                <p style="margin: 8px 0 0; font-size: 0.73rem; color: #94a3b8; text-align: center; line-height: 1.4;">
+                <p style="margin: 8px 0 10px; font-size: 0.73rem; color: #94a3b8; text-align: center; line-height: 1.4;">
                   寄せては返す波の音と528Hzのうねりに合わせて息を吐き出すことで、思考を手放し自然と眠りに落ちます
                 </p>
+                <div style="text-align: center; margin-top: 6px;">
+                  <button type="button" id="btn-preview-wave" class="btn-preview-wave">
+                    <svg class="preview-play-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                      <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                    </svg>
+                    <svg class="preview-stop-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:none;">
+                      <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+                    </svg>
+                    <span class="preview-btn-text">潮騒と528Hzを試聴する</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -591,8 +602,8 @@
     </div>
   </div>
 
-  <script src="mudras.js?v=20261020_manual"></script>
-  <script src="audioEngine.js?v=20261020_manual"></script>
-  <script src="app.js?v=20261020_manual"></script>
+  <script src="mudras.js?v=20261026_wave"></script>
+  <script src="audioEngine.js?v=20261026_wave"></script>
+  <script src="app.js?v=20261026_wave"></script>
 </body>
 </html>

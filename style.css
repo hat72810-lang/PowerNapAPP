@@ -679,6 +679,61 @@ body {
   margin-top: 1px;
 }
 
+/* Rest Sound Preview Button */
+.btn-preview-wave {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: var(--cyan);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-preview-wave:hover {
+  background: rgba(0, 229, 255, 0.16);
+  border-color: var(--cyan);
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-preview-wave:active {
+  transform: translateY(1px);
+}
+
+.btn-preview-wave.playing {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #f87171;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.3);
+  animation: pulse-preview 2s infinite ease-in-out;
+}
+
+.btn-preview-wave.playing .preview-play-icon {
+  display: none !important;
+}
+
+.btn-preview-wave.playing .preview-stop-icon {
+  display: inline-block !important;
+}
+
+@keyframes pulse-preview {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.55);
+  }
+}
+
 /* Duration Grid */
 .duration-grid {
   display: grid;
