@@ -105,7 +105,7 @@ class PowerNapAudioEngine {
         b5 = -0.7616 * b5 - white * 0.0168980;
         const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
         b6 = white * 0.115926;
-        data[i] = pink * 0.10;
+        data[i] = pink * 0.07;
       }
       // ループの継ぎ目でプチ音が出ないよう両端（150ms）をスムーズにクロスフェード
       const fadeSamples = Math.floor(sampleRate * 0.15);
@@ -147,10 +147,10 @@ class PowerNapAudioEngine {
       // 528Hz フィルター: 500Hz 〜 720Hz
       toneFilterCurve[i] = 500 + (720 - 500) * sCurve;
 
-      // 潮騒自然音 音量: 引いたとき 0.05 〜 寄せたとき 0.24（耳に優しく穏やかなさざ波）
-      noiseGainCurve[i] = 0.05 + (0.24 - 0.05) * sCurve;
-      // 潮騒フィルター: 引いたとき 300Hz（静かな余韻） 〜 寄せたとき 780Hz（柔らかく温かい波音）
-      noiseFilterCurve[i] = 300 + (780 - 300) * sCurve;
+      // 潮騒自然音 音量: 引いたとき 0.03 〜 寄せたとき 0.15（控えめで静かなさざ波）
+      noiseGainCurve[i] = 0.03 + (0.15 - 0.03) * sCurve;
+      // 潮騒フィルター: 引いたとき 260Hz（静かな余韻） 〜 寄せたとき 620Hz（柔らかく温かい低波音）
+      noiseFilterCurve[i] = 260 + (620 - 260) * sCurve;
     }
     return { toneGainCurve, toneFilterCurve, noiseGainCurve, noiseFilterCurve };
   }
@@ -219,15 +219,15 @@ class PowerNapAudioEngine {
       noiseSource.buffer = noiseBuffer;
       noiseSource.loop = true;
 
-      // 潮騒用ダイナミックローパスフィルター（300Hz〜780Hzで耳に優しく開閉）
+      // 潮騒用ダイナミックローパスフィルター（260Hz〜620Hzで耳に優しく開閉）
       const noiseFilter = this.ctx.createBiquadFilter();
       noiseFilter.type = 'lowpass';
-      noiseFilter.frequency.setValueAtTime(300, now);
-      noiseFilter.Q.setValueAtTime(0.6, now);
+      noiseFilter.frequency.setValueAtTime(260, now);
+      noiseFilter.Q.setValueAtTime(0.5, now);
 
       // 潮騒用ダイナミックゲイン
       const noiseGain = this.ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.05, now);
+      noiseGain.gain.setValueAtTime(0.03, now);
 
       noiseSource.connect(noiseFilter);
       noiseFilter.connect(noiseGain);
