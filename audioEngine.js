@@ -142,13 +142,13 @@ class PowerNapAudioEngine {
         sCurve = 0.5 * (1 + Math.cos(Math.PI * p));
       }
 
-      // 528Hz 音量: 吐き切ったとき 0.225 〜 吸い切ったとき 0.495（10%減衰）
-      toneGainCurve[i] = 0.225 + (0.495 - 0.225) * sCurve;
+      // 528Hz 音量: 吐き切ったとき 0.236 〜 吸い切ったとき 0.520（5%増量）
+      toneGainCurve[i] = 0.236 + (0.520 - 0.236) * sCurve;
       // 528Hz フィルター: 500Hz 〜 720Hz
       toneFilterCurve[i] = 500 + (720 - 500) * sCurve;
 
-      // 潮騒自然音 音量: 引いたとき 0.033 〜 寄せたとき 0.165（10%増量）
-      noiseGainCurve[i] = 0.033 + (0.165 - 0.033) * sCurve;
+      // 潮騒自然音 音量: 引いたとき 0.036 〜 寄せたとき 0.182（10%増量）
+      noiseGainCurve[i] = 0.036 + (0.182 - 0.036) * sCurve;
       // 潮騒フィルター: 引いたとき 260Hz（静かな余韻） 〜 寄せたとき 620Hz（柔らかく温かい低波音）
       noiseFilterCurve[i] = 260 + (620 - 260) * sCurve;
     }
@@ -225,9 +225,9 @@ class PowerNapAudioEngine {
       noiseFilter.frequency.setValueAtTime(260, now);
       noiseFilter.Q.setValueAtTime(0.5, now);
 
-      // 潮騒用ダイナミックゲイン
+      // 潮騒用ダイナミックゲイン（10%増量）
       const noiseGain = this.ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.033, now);
+      noiseGain.gain.setValueAtTime(0.036, now);
 
       noiseSource.connect(noiseFilter);
       noiseFilter.connect(noiseGain);
@@ -243,12 +243,12 @@ class PowerNapAudioEngine {
       subOsc.type = 'sine';
       subOsc.frequency.setValueAtTime(264, now);
 
-      // トーン基礎ゲイン（10%減衰）
+      // トーン基礎ゲイン（5%増量）
       const toneGain = this.ctx.createGain();
-      toneGain.gain.setValueAtTime(0.040, now);
+      toneGain.gain.setValueAtTime(0.042, now);
 
       const subGain = this.ctx.createGain();
-      subGain.gain.setValueAtTime(0.016, now);
+      subGain.gain.setValueAtTime(0.017, now);
 
       // トーン用ダイナミックローパスフィルター（呼吸に合わせて開閉）
       const toneFilter = this.ctx.createBiquadFilter();
@@ -257,7 +257,7 @@ class PowerNapAudioEngine {
 
       // 呼吸リズム専用のGainNode（8.5秒周期: 吸う2.5秒 / 吐く6.0秒）
       const breathGain = this.ctx.createGain();
-      breathGain.gain.setValueAtTime(0.225, now);
+      breathGain.gain.setValueAtTime(0.236, now);
       this.breathGain = breathGain;
 
       osc.connect(toneGain);
