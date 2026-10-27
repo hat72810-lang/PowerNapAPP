@@ -206,8 +206,8 @@ class PowerNapAudioEngine {
 
     const now = this.ctx.currentTime;
     
-    // マスターゲイン（スピーカー 0.055 / イヤホン 0.066: 10%音量アップ）
-    const targetMasterGain = mode === 'speaker' ? 0.055 : 0.066;
+    // マスターゲイン（スピーカー 0.063 / イヤホン 0.076: 15%音量アップ）
+    const targetMasterGain = mode === 'speaker' ? 0.063 : 0.076;
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.setValueAtTime(targetMasterGain, now);
     this.masterGain.connect(this.ctx.destination);
@@ -316,7 +316,7 @@ class PowerNapAudioEngine {
   fadeRestSound(durationSeconds = 15) {
     if (this.masterGain && this.ctx) {
       const now = this.ctx.currentTime;
-      const initialGain = this.mode === 'speaker' ? 0.055 : 0.066;
+      const initialGain = this.mode === 'speaker' ? 0.063 : 0.076;
       this.masterGain.gain.cancelScheduledValues(now);
       this.masterGain.gain.setValueAtTime(this.masterGain.gain.value || initialGain, now);
       this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
