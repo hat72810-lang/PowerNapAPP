@@ -429,6 +429,12 @@ function initApp() {
         window.powerNapAudio.updateAwakeIntensity(progress);
       }
 
+      // 残り時間に応じたフェードアウト処理（終了10秒前から滑らかに減衰）
+      const awakeFadeThreshold = Math.min(10, Math.floor(totalAwakeSeconds / 2));
+      if (awakeRemainingSeconds === awakeFadeThreshold && window.powerNapAudio) {
+        window.powerNapAudio.fadeAwakeSound(awakeFadeThreshold);
+      }
+
       if (awakeRemainingSeconds <= 0) {
         clearInterval(awakeInterval);
         finishPowerNap();
@@ -504,8 +510,14 @@ function initApp() {
     awakeRemainingSeconds = Math.max(1, Math.min(totalAwakeSeconds, awakeRemainingSeconds));
     updateAwakeUI();
 
+    const awakeFadeThreshold = Math.min(10, Math.floor(totalAwakeSeconds / 2));
     if (window.powerNapAudio) {
-      window.powerNapAudio.updateAwakeIntensity(ratio);
+      if (awakeRemainingSeconds <= awakeFadeThreshold) {
+        window.powerNapAudio.fadeAwakeSound(awakeRemainingSeconds);
+      } else {
+        window.powerNapAudio.cancelFadeAwakeSound();
+        window.powerNapAudio.updateAwakeIntensity(ratio);
+      }
     }
   });
 

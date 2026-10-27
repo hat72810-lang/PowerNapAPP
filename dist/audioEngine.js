@@ -21,6 +21,7 @@ class PowerNapAudioEngine {
     this.html5Audio = null;
     this.speakerAudio = null;
     this.earphoneAudio = null;
+    this.isFadingAwake = false;
   }
 
   init() {
@@ -70,6 +71,7 @@ class PowerNapAudioEngine {
     this.awakeGain = null;
     this.awakeOsc1 = null;
     this.awakeOsc2 = null;
+    this.isFadingAwake = false;
     this.isPlaying = false;
     this.currentPhase = null;
   }
@@ -462,6 +464,7 @@ class PowerNapAudioEngine {
     this.mode = mode;
     this.isPlaying = true;
     this.currentPhase = 'awake';
+    this.isFadingAwake = false;
 
     const now = this.ctx.currentTime;
 
@@ -544,9 +547,11 @@ class PowerNapAudioEngine {
     const now = this.ctx.currentTime;
     const clampedProgress = Math.max(0, Math.min(1, progress));
 
-    // 音量を 0.03 (3%) から 0.14 (14%) へ優しくビルドアップ
-    const targetVolume = 0.03 + clampedProgress * 0.11;
-    this.masterGain.gain.setValueAtTime(targetVolume, now);
+    // フェードアウト中でない場合のみマスター音量を更新
+    if (!this.isFadingAwake) {
+      const targetVolume = 0.03 + clampedProgress * 0.11;
+      this.masterGain.gain.setValueAtTime(targetVolume, now);
+    }
 
     if (this.mode === 'speaker' && this.awakeLfo && this.awakeOsc1) {
       const pulseFreq = 40 + clampedProgress * 5;
@@ -559,6 +564,25 @@ class PowerNapAudioEngine {
       const rightFreq = 240 + clampedProgress * 20;
       this.awakeOsc1.frequency.setValueAtTime(leftFreq, now);
       this.awakeOsc2.frequency.setValueAtTime(rightFreq, now);
+    }
+  }
+
+  fadeAwakeSound(durationSeconds = 10) {
+    if (this.masterGain && this.ctx && this.currentPhase === 'awake') {
+      this.isFadingAwake = true;
+      const now = this.ctx.currentTime;
+      const currentVal = this.masterGain.gain.value;
+      this.masterGain.gain.cancelScheduledValues(now);
+      this.masterGain.gain.setValueAtTime(currentVal > 0 ? currentVal : 0.13, now);
+      this.masterGain.gain.linearRampToValueAtTime(0.0001, now + durationSeconds);
+    }
+  }
+
+  cancelFadeAwakeSound() {
+    if (this.masterGain && this.ctx && this.currentPhase === 'awake') {
+      this.isFadingAwake = false;
+      const now = this.ctx.currentTime;
+      this.masterGain.gain.cancelScheduledValues(now);
     }
   }
 }
