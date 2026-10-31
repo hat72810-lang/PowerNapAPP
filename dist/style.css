@@ -192,7 +192,24 @@ body {
   justify-content: space-around;
   align-items: center;
   text-align: center;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.glass-card::-webkit-scrollbar {
+  width: 4px;
+}
+
+.glass-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.glass-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
 }
 
 /* Headings & Text Formatting */
@@ -1541,8 +1558,8 @@ body {
    ======================================================== */
 
 .quick-sound-section {
-  margin-top: 18px;
-  padding-top: 14px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px dashed rgba(255, 255, 255, 0.1);
   width: 100%;
 }
@@ -1550,9 +1567,9 @@ body {
 .quick-sound-header {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   font-weight: 700;
-  font-size: 0.90rem;
+  font-size: 0.82rem;
   color: var(--text-main);
   margin-bottom: 2px;
 }
@@ -1562,66 +1579,66 @@ body {
 }
 
 .quick-sound-desc {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .quick-sound-card {
-  border-radius: var(--radius-lg);
-  padding: 11px 12px;
-  margin-bottom: 10px;
+  border-radius: var(--radius-md);
+  padding: 7px 10px;
+  margin-bottom: 6px;
   transition: all 0.25s ease;
 }
 
 .quick-sound-card.sleep-card {
-  background: linear-gradient(135deg, rgba(30, 27, 75, 0.45) 0%, rgba(15, 23, 42, 0.6) 100%);
-  border: 1px solid rgba(129, 140, 248, 0.25);
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.5) 0%, rgba(15, 23, 42, 0.65) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.3);
 }
 
 .quick-sound-card.awake-card {
-  background: linear-gradient(135deg, rgba(67, 20, 7, 0.35) 0%, rgba(30, 15, 5, 0.5) 100%);
-  border: 1px solid rgba(251, 146, 60, 0.25);
+  background: linear-gradient(135deg, rgba(67, 20, 7, 0.45) 0%, rgba(30, 15, 5, 0.6) 100%);
+  border: 1px solid rgba(251, 146, 60, 0.35);
 }
 
 .quick-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 
 .quick-card-title-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .quick-card-icon {
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .quick-card-title {
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: #f1f5f9;
 }
 
 .quick-card-badge {
-  font-size: 0.65rem;
-  padding: 2px 7px;
-  border-radius: 10px;
+  font-size: 0.60rem;
+  padding: 1px 6px;
+  border-radius: 8px;
   font-weight: 600;
 }
 
 .quick-card-badge.sleep {
-  background: rgba(99, 102, 241, 0.18);
+  background: rgba(99, 102, 241, 0.2);
   color: #a5b4fc;
   border: 1px solid rgba(99, 102, 241, 0.3);
 }
 
 .quick-card-badge.awake {
-  background: rgba(245, 158, 11, 0.18);
+  background: rgba(245, 158, 11, 0.2);
   color: #fcd34d;
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
@@ -1629,7 +1646,7 @@ body {
 .quick-btn-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 6px;
+  gap: 5px;
 }
 
 .btn-quick-play {
@@ -1637,10 +1654,10 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 4px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-md);
+  padding: 6px 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1658,21 +1675,117 @@ body {
 
 .btn-quick-val {
   font-family: "Outfit", sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
   line-height: 1;
 }
 
 .btn-quick-unit {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: var(--text-sub);
   margin-top: 1px;
 }
 
 .btn-quick-sub {
-  font-size: 0.60rem;
-  color: #94a3b8;
+  font-size: 0.58rem;
   margin-top: 2px;
+  font-weight: 600;
+  color: var(--cyan);
+}
+
+/* Step 1 Specific Compact Layout to Ensure All Quick Play Buttons Are Instantly Visible */
+#step-1 .glass-card {
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 10px 14px 12px 14px;
+}
+
+#step-1 .step-title {
+  font-size: 1.25rem;
+  margin-bottom: 1px;
+}
+
+#step-1 .step-subtitle {
+  font-size: 0.78rem;
+  margin-bottom: 2px;
+}
+
+#step-1 .hero-graphic-box {
+  margin: 1px auto;
+}
+
+#step-1 .coffee-illustration {
+  width: 68px;
+  height: 68px;
+}
+
+#step-1 .hero-mudra-badge {
+  width: 56px;
+  height: 56px;
+}
+
+#step-1 .hero-mudra-img {
+  width: 48px;
+  height: 48px;
+}
+
+#step-1 .splash-aura-glow-inline {
+  width: 90px;
+  height: 90px;
+}
+
+#step-1 .coffee-badge {
+  width: 22px;
+  height: 22px;
+  bottom: -2px;
+  right: -2px;
+}
+
+#step-1 .coffee-icon-svg {
+  width: 13px;
+  height: 13px;
+}
+
+#step-1 .auto-start-section {
+  margin: 4px 0 2px 0;
+  padding: 7px 10px;
+}
+
+#step-1 .auto-start-header {
+  margin-bottom: 5px;
+  font-size: 0.78rem;
+}
+
+#step-1 .btn-auto-start {
+  padding: 5px 2px;
+}
+
+#step-1 .auto-time {
+  font-size: 0.95rem;
+}
+
+#step-1 .info-badge-list {
+  margin-top: 2px;
+  width: 100%;
+}
+
+#step-1 .info-item {
+  padding: 4px 8px;
+  gap: 6px;
+}
+
+#step-1 .info-icon-dot {
+  width: 18px;
+  height: 18px;
+  font-size: 0.68rem;
+}
+
+#step-1 .info-text-group h4 {
+  font-size: 0.76rem;
+}
+
+#step-1 .info-text-group p {
+  font-size: 0.68rem;
 }
 
 .featured-sleep {
