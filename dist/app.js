@@ -127,6 +127,7 @@ function initApp() {
   // --- Reset & Return to Home ---
   function resetToHome() {
     stopWavePreview();
+    stopQuickPlayer();
     if (timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
@@ -644,6 +645,181 @@ function initApp() {
         targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
+  });
+
+  // --- Fullscreen Quick Player Logic (Night 528Hz & Morning 40Hz) ---
+  const quickPlayerModal = document.getElementById("quick-player-modal");
+  const blackoutScreen = document.getElementById("blackout-screen");
+  const btnQpBlackout = document.getElementById("btn-qp-blackout");
+  const qpModeBadge = document.getElementById("qp-mode-badge");
+  const qpTimerDigits = document.getElementById("qp-timer-digits");
+  const qpFinishTime = document.getElementById("qp-finish-time");
+  const qpPulseAura = document.getElementById("qp-pulse-aura");
+  const qpAlarmToggleRow = document.getElementById("qp-alarm-toggle-row");
+  const qpAlarmCheckbox = document.getElementById("qp-alarm-checkbox");
+  const qpAlarmRingingBox = document.getElementById("qp-alarm-ringing-box");
+  const btnQpAlarmStop = document.getElementById("btn-qp-alarm-stop");
+  const qpSoundNote = document.getElementById("qp-sound-note");
+  const btnQpStop = document.getElementById("btn-qp-stop");
+  const btnQuickPlayList = document.querySelectorAll(".btn-quick-play");
+
+  let qpInterval = null;
+  let qpRemainingSeconds = 0;
+  let qpTotalSeconds = 0;
+  let qpCurrentMode = null; // 'sleep' | 'awake'
+
+  function updateQuickPlayerUI() {
+    if (qpTimerDigits) qpTimerDigits.textContent = formatTime(qpRemainingSeconds);
+    if (qpFinishTime) {
+      qpFinishTime.textContent = getEstimatedFinishTimeString(qpRemainingSeconds);
+    }
+  }
+
+  function startQuickPlayer(mode, minutes) {
+    // 既存セッション停止
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    if (awakeInterval) { clearInterval(awakeInterval); awakeInterval = null; }
+    if (qpInterval) { clearInterval(qpInterval); qpInterval = null; }
+    if (window.powerNapAudio) window.powerNapAudio.stop();
+
+    qpCurrentMode = mode;
+    qpTotalSeconds = minutes * 60;
+    qpRemainingSeconds = qpTotalSeconds;
+
+    if (qpAlarmRingingBox) qpAlarmRingingBox.style.display = "none";
+    if (blackoutScreen) blackoutScreen.style.display = "none";
+
+    // Audio Engine Init
+    if (window.powerNapAudio && typeof window.powerNapAudio.init === 'function') {
+      try { window.powerNapAudio.init(); } catch (e) {}
+    }
+
+    if (mode === "sleep") {
+      if (qpModeBadge) {
+        qpModeBadge.textContent = "🌙 おやすみ 528Hz 潮騒";
+        qpModeBadge.className = "qp-badge";
+      }
+      if (qpPulseAura) qpPulseAura.className = "qp-pulse-aura";
+      if (qpAlarmToggleRow) qpAlarmToggleRow.style.display = "none";
+      if (qpSoundNote) {
+        qpSoundNote.textContent = "波の音と528Hzが終了直前に優しくフェードアウトし、自然に停止します。";
+      }
+      if (window.powerNapAudio) {
+        window.powerNapAudio.startRestSound(audioMode || "speaker", 0.25);
+      }
+    } else {
+      // awake mode
+      if (qpModeBadge) {
+        qpModeBadge.textContent = "☀️ 朝の覚醒 40Hz ガンマ波";
+        qpModeBadge.className = "qp-badge awake-badge";
+      }
+      if (qpPulseAura) qpPulseAura.className = "qp-pulse-aura awake-aura";
+      if (qpAlarmToggleRow) qpAlarmToggleRow.style.display = "block";
+      if (qpSoundNote) {
+        qpSoundNote.textContent = "40Hzガンマ波音響で脳血流を活性化し、頭をクリアに目覚めさせます。";
+      }
+      if (window.powerNapAudio) {
+        window.powerNapAudio.startAwakeSound(audioMode || "speaker");
+      }
+    }
+
+    updateQuickPlayerUI();
+
+    if (quickPlayerModal) {
+      quickPlayerModal.style.display = "flex";
+      quickPlayerModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    requestWakeLock();
+
+    qpInterval = setInterval(() => {
+      qpRemainingSeconds--;
+      updateQuickPlayerUI();
+
+      if (mode === "sleep") {
+        const fadeThreshold = Math.min(15, Math.floor(qpTotalSeconds / 2));
+        if (qpRemainingSeconds === fadeThreshold && window.powerNapAudio) {
+          window.powerNapAudio.fadeRestSound(fadeThreshold);
+        }
+        if (qpRemainingSeconds <= 0) {
+          clearInterval(qpInterval);
+          qpInterval = null;
+          stopQuickPlayer();
+        }
+      } else {
+        // awake mode
+        const awakeFadeThreshold = Math.min(10, Math.floor(qpTotalSeconds / 2));
+        if (qpRemainingSeconds === awakeFadeThreshold && window.powerNapAudio) {
+          window.powerNapAudio.fadeAwakeSound(awakeFadeThreshold);
+        }
+        if (qpRemainingSeconds <= 0) {
+          clearInterval(qpInterval);
+          qpInterval = null;
+          if (qpAlarmCheckbox && qpAlarmCheckbox.checked) {
+            // アラーム鳴動
+            if (window.powerNapAudio) window.powerNapAudio.startAlarmLoop();
+            if (qpAlarmRingingBox) qpAlarmRingingBox.style.display = "flex";
+          } else {
+            stopQuickPlayer();
+          }
+        }
+      }
+    }, 1000);
+  }
+
+  function stopQuickPlayer() {
+    if (qpInterval) {
+      clearInterval(qpInterval);
+      qpInterval = null;
+    }
+    if (window.powerNapAudio) {
+      window.powerNapAudio.stop();
+    }
+    if (blackoutScreen) blackoutScreen.style.display = "none";
+    if (quickPlayerModal) {
+      quickPlayerModal.style.display = "none";
+      quickPlayerModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+    if (qpAlarmRingingBox) qpAlarmRingingBox.style.display = "none";
+    releaseWakeLock();
+  }
+
+  btnQuickPlayList.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const mode = btn.getAttribute("data-mode");
+      const min = parseInt(btn.getAttribute("data-minutes"), 10);
+      if (mode && min) {
+        startQuickPlayer(mode, min);
+      }
+    });
+  });
+
+  if (btnQpStop) {
+    btnQpStop.addEventListener("click", stopQuickPlayer);
+  }
+
+  if (btnQpAlarmStop) {
+    btnQpAlarmStop.addEventListener("click", stopQuickPlayer);
+  }
+
+  if (btnQpBlackout) {
+    btnQpBlackout.addEventListener("click", () => {
+      if (blackoutScreen) blackoutScreen.style.display = "flex";
+    });
+  }
+
+  if (blackoutScreen) {
+    blackoutScreen.addEventListener("click", () => {
+      blackoutScreen.style.display = "none";
+    });
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && quickPlayerModal && quickPlayerModal.style.display !== "none") {
+      stopQuickPlayer();
+    }
   });
 
   // 初回プレビュー計算 & 10秒おきの定期再計算（分が変わった場合の自動追従）
