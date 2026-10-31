@@ -82,6 +82,14 @@ function initApp() {
   // Step 7 Controls (完了)
   const btnResetApp = document.getElementById("btn-reset-app");
 
+  // Estimated Finish Time Controls
+  const step2FinishTimeEl = document.getElementById("step2-finish-time");
+  const step2NapMinEl = document.getElementById("step2-nap-min");
+  const step2TotalMinEl = document.getElementById("step2-total-min");
+  const step3FinishTimeEl = document.getElementById("step3-finish-time");
+  const napFinishTimeVal = document.getElementById("nap-finish-time-val");
+  const awakeFinishTimeVal = document.getElementById("awake-finish-time-val");
+
   // --- Screen Wake Lock Helper ---
   async function requestWakeLock() {
     if ("wakeLock" in navigator) {
@@ -168,6 +176,10 @@ function initApp() {
     } else {
       releaseWakeLock();
     }
+
+    if (stepNumber === 2 || stepNumber === 3) {
+      updateStep2And3Previews();
+    }
   }
 
   // --- Format Time Helper (MM:SS) ---
@@ -175,6 +187,29 @@ function initApp() {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  }
+
+  // --- Format Estimated Finish Clock Time (HH:MM) ---
+  function getEstimatedFinishTimeString(addSeconds) {
+    const target = new Date(Date.now() + Math.max(0, addSeconds) * 1000);
+    const h = target.getHours().toString().padStart(2, "0");
+    const m = target.getMinutes().toString().padStart(2, "0");
+    return `${h}:${m}`;
+  }
+
+  // --- Update STEP 2 & STEP 3 Finish Time Previews ---
+  function updateStep2And3Previews() {
+    const awakeSeconds = 3 * 60; // 覚醒タイム 180秒
+    const totalSeconds = restDurationSeconds + awakeSeconds;
+    const finishStr = getEstimatedFinishTimeString(totalSeconds);
+
+    if (step2FinishTimeEl) step2FinishTimeEl.textContent = finishStr;
+    if (step3FinishTimeEl) step3FinishTimeEl.textContent = finishStr;
+
+    const napMinutes = Math.round(restDurationSeconds / 60);
+    const totalMinutes = Math.round(totalSeconds / 60);
+    if (step2NapMinEl) step2NapMinEl.textContent = restDurationSeconds < 60 ? `${restDurationSeconds}秒` : `${napMinutes}`;
+    if (step2TotalMinEl) step2TotalMinEl.textContent = restDurationSeconds < 60 ? `約3` : `${totalMinutes}`;
   }
 
   // --- Step 1 Listener ---
@@ -260,6 +295,7 @@ function initApp() {
       } else if (minAttr) {
         restDurationSeconds = parseInt(minAttr, 10) * 60;
       }
+      updateStep2And3Previews();
     });
   });
 
@@ -350,6 +386,12 @@ function initApp() {
       const circumference = 534.07;
       const offset = circumference * progressFraction;
       timerProgressCircle.style.strokeDashoffset = `${offset}`;
+    }
+
+    // 覚醒完了予定時刻（リアルタイムに現在時刻から計算）
+    if (napFinishTimeVal) {
+      const totalSecUntilAwakeDone = remainingSeconds + 3 * 60; // 仮眠残り秒数 + 覚醒3分(180秒)
+      napFinishTimeVal.textContent = getEstimatedFinishTimeString(totalSecUntilAwakeDone);
     }
   }
 
@@ -448,6 +490,11 @@ function initApp() {
     const pct = Math.min(100, Math.max(0, progressFraction * 100));
     if (awakeProgressFill) awakeProgressFill.style.width = `${pct}%`;
     if (awakeProgressKnob) awakeProgressKnob.style.left = `${pct}%`;
+
+    // 完全覚醒完了予定時刻（リアルタイム更新）
+    if (awakeFinishTimeVal) {
+      awakeFinishTimeVal.textContent = getEstimatedFinishTimeString(awakeRemainingSeconds);
+    }
   }
 
   // --- Interactive Seekable Progress Bar Logic ---
@@ -598,6 +645,10 @@ function initApp() {
       }
     });
   });
+
+  // 初回プレビュー計算 & 10秒おきの定期再計算（分が変わった場合の自動追従）
+  updateStep2And3Previews();
+  setInterval(updateStep2And3Previews, 10000);
 }
 
 if (document.readyState === "loading") {

@@ -39,7 +39,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=20261027_awake_fade">
+  <link rel="stylesheet" href="style.css?v=20261031_finish_time">
 </head>
 <body>
 
@@ -218,6 +218,18 @@
                 <span class="duration-unit" style="color: #ffea00;">DEMO</span>
               </button>
             </div>
+
+            <!-- 終了予定時刻 リアルタイムプレビュー (STEP 2) -->
+            <div class="selection-finish-preview" id="selection-finish-preview">
+              <div class="finish-preview-badge">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>今始めると <strong id="step2-finish-time" class="highlight-time">--:--</strong> に覚醒完了</span>
+              </div>
+              <p class="finish-preview-sub">（仮眠 <span id="step2-nap-min">15</span>分 ＋ 覚醒 3分 ＝ 計<span id="step2-total-min">18</span>分）</p>
+            </div>
           </div>
         </div>
 
@@ -257,6 +269,16 @@
               </div>
             </div>
           </div>
+
+          <div class="step3-finish-preview" style="text-align: center; margin-top: 10px;">
+            <div style="display: inline-flex; align-items: center; gap: 5px; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); padding: 4px 12px; border-radius: 16px; font-size: 0.76rem; color: #cbd5e1;">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" style="color: var(--cyan);">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>覚醒完了予定: <strong id="step3-finish-time" style="color: var(--cyan); font-weight: 700; font-family: 'Outfit', sans-serif; font-size: 0.95rem;">--:--</strong></span>
+            </div>
+          </div>
         </div>
 
         <div class="btn-container">
@@ -273,6 +295,17 @@
             <span class="nap-badge" style="background: rgba(0, 229, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; display: inline-block; margin-bottom: 6px;">POWER NAP PHASE</span>
             <h2 class="step-title" style="margin-bottom: 2px;">パワーナップ中</h2>
             <div id="timer-digits" class="timer-digits" style="font-size: 2.3rem; font-weight: 700; color: var(--cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); margin: 2px 0;">15:00</div>
+            
+            <!-- 終了予定時刻 リアルタイムバナー (STEP 4) -->
+            <div class="finish-time-banner" id="nap-finish-time-banner">
+              <svg class="finish-clock-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span class="finish-label">覚醒完了予定:</span>
+              <span class="finish-time-val" id="nap-finish-time-val">--:--</span>
+              <span class="finish-sub-tag">（覚醒3分含）</span>
+            </div>
           </div>
 
           <div id="nap-progress-bar-container" class="nap-progress-bar-container">
@@ -350,6 +383,16 @@
             <span class="awake-badge">AWAKENING PHASE (3 MIN)</span>
             <h2 class="step-title">覚醒タイム進行中</h2>
             <div id="awake-timer-digits" class="timer-digits" style="font-size: 2.3rem; color: var(--accent-awake);">03:00</div>
+
+            <!-- 終了予定時刻 リアルタイムバナー (STEP 6) -->
+            <div class="finish-time-banner awake-theme" id="awake-finish-time-banner">
+              <svg class="finish-clock-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span class="finish-label">完全覚醒完了:</span>
+              <span class="finish-time-val" id="awake-finish-time-val">--:--</span>
+            </div>
           </div>
 
           <div id="awake-progress-bar-container" class="awake-progress-bar-container">
@@ -602,8 +645,8 @@
     </div>
   </div>
 
-  <script src="mudras.js?v=20261027_awake_fade"></script>
-  <script src="audioEngine.js?v=20261027_awake_fade"></script>
-  <script src="app.js?v=20261027_awake_fade"></script>
+  <script src="mudras.js?v=20261031_finish_time"></script>
+  <script src="audioEngine.js?v=20261031_finish_time"></script>
+  <script src="app.js?v=20261031_finish_time"></script>
 </body>
 </html>

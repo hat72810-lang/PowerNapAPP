@@ -779,6 +779,108 @@ body {
   margin-top: 1px;
 }
 
+/* Real-time Estimated Finish Time Previews */
+.selection-finish-preview {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 229, 255, 0.05);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.finish-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.80rem;
+  color: #cbd5e1;
+}
+
+.finish-preview-badge svg {
+  color: var(--cyan);
+  filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.5));
+}
+
+.highlight-time {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+.finish-preview-sub {
+  margin: 3px 0 0 0;
+  font-size: 0.68rem;
+  color: var(--text-sub);
+}
+
+/* Finish Time Banner (STEP 4 & STEP 6) */
+.finish-time-banner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 20px;
+  padding: 3px 12px;
+  margin: 2px auto 6px auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.finish-time-banner .finish-clock-icon {
+  color: var(--cyan);
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.5));
+}
+
+.finish-time-banner .finish-label {
+  font-size: 0.70rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.finish-time-banner .finish-time-val {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+
+.finish-time-banner .finish-sub-tag {
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-left: 1px;
+}
+
+/* Awake Phase Banner Variant (STEP 6) */
+.finish-time-banner.awake-theme {
+  background: rgba(255, 145, 0, 0.08);
+  border-color: rgba(255, 145, 0, 0.3);
+}
+
+.finish-time-banner.awake-theme .finish-clock-icon {
+  color: var(--accent-awake);
+  filter: drop-shadow(0 0 5px rgba(255, 145, 0, 0.5));
+}
+
+.finish-time-banner.awake-theme .finish-label {
+  color: #fdba74;
+}
+
+.finish-time-banner.awake-theme .finish-time-val {
+  color: var(--accent-awake);
+  text-shadow: 0 0 8px rgba(255, 145, 0, 0.5);
+}
+
 /* Step 4: Power Nap Timer (190px Circle Ring so Badge Fits Inside Perfect) */
 .timer-ring-wrapper {
   position: relative;
