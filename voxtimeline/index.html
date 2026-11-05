@@ -1415,18 +1415,28 @@
       autoResizeTextarea();
       validatePostButton();
 
-      renderTimeline();
+      await renderTimeline(true);
       showToast('タイムラインにポストしました');
     }
 
     btnPost.addEventListener('click', handlePost);
 
+    function scrollToBottom(smooth = true) {
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight || document.body.scrollHeight,
+          behavior: smooth ? 'smooth' : 'auto'
+        });
+      }, 50);
+    }
+
     /* ==========================================================================
-       Timeline Rendering & Grouping by Date
+       Timeline Rendering & Grouping by Date (Chronological: Newest at Bottom)
        ========================================================================== */
-    async function renderTimeline() {
+    async function renderTimeline(shouldScrollBottom = false) {
       const tweets = await dbGetAll();
-      tweets.sort((a, b) => b.createdAt - a.createdAt); // Newest first
+      // Chronological: older at top, newest at bottom
+      tweets.sort((a, b) => a.createdAt - b.createdAt);
 
       if (tweets.length === 0) {
         timelineFeed.innerHTML = `
@@ -1524,6 +1534,10 @@
       }
 
       attachCardEventListeners();
+
+      if (shouldScrollBottom) {
+        scrollToBottom(true);
+      }
     }
 
     function attachCardEventListeners() {
@@ -1743,8 +1757,10 @@
       }, 2200);
     }
 
-    // Init App
-    renderTimeline();
+    // Init App (chronological: scroll to bottom so latest posts are immediately visible)
+    renderTimeline(false).then(() => {
+      scrollToBottom(false);
+    });
   </script>
 </body>
 </html>
