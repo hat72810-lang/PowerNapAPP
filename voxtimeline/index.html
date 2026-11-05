@@ -1140,8 +1140,8 @@
 
       ctx.clearRect(0, 0, width, height);
 
-      const barCount = 40;
-      const barWidth = 3.5;
+      const barCount = 36;
+      const barWidth = 4;
       const totalBarWidth = barCount * barWidth;
       const barGap = (width - totalBarWidth) / (barCount + 1);
       const centerY = height / 2;
@@ -1164,24 +1164,25 @@
 
       for (let i = 0; i < barCount; i++) {
         let targetHeight = 6;
-        if (freqData && averageVol > 3) {
-          // Center-weighted distribution with dynamic frequency bins
+        if (freqData && averageVol > 1.2) {
+          // Center-weighted distribution with dynamic frequency bins & sensitivity boost
           const distFromCenter = Math.abs(i - barCount / 2) / (barCount / 2);
           const freqIndex = Math.min(
             freqData.length - 1,
-            Math.floor((1 - distFromCenter * 0.65) * (freqData.length * 0.75))
+            Math.floor((1 - distFromCenter * 0.6) * (freqData.length * 0.8))
           );
           const val = freqData[freqIndex] || 0;
-          targetHeight = Math.max(6, (val / 255) * (height - 6));
+          const amplifiedVal = Math.min(255, val * 1.5);
+          targetHeight = Math.max(6, (amplifiedVal / 255) * (height - 8));
         } else {
           // Fluid breathing ambient sine animation
           const wave1 = Math.sin(time + i * 0.22);
           const wave2 = Math.cos(time * 0.8 + i * 0.15);
-          targetHeight = 6 + Math.max(0, (wave1 + wave2) * 8 + Math.sin(time * 2 + i * 0.35) * 5);
+          targetHeight = 6 + Math.max(0, (wave1 + wave2) * 7 + Math.sin(time * 2 + i * 0.35) * 5);
         }
 
         prevBarHeights[i] = prevBarHeights[i] * 0.65 + targetHeight * 0.35;
-        const barH = Math.max(4, prevBarHeights[i]);
+        const barH = Math.max(5, prevBarHeights[i]);
 
         const x = barGap + i * (barWidth + barGap);
         const y = centerY - barH / 2;
@@ -1192,8 +1193,8 @@
         gradient.addColorStop(1, '#c084fc');
 
         ctx.fillStyle = gradient;
-        ctx.shadowColor = 'rgba(29, 155, 240, 0.45)';
-        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(29, 155, 240, 0.5)';
+        ctx.shadowBlur = 8;
 
         const r = Math.min(barWidth / 2, barH / 2);
         ctx.beginPath();
