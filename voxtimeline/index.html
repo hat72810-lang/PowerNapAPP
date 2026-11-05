@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>VoxTimeline</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: #121214;
+      --border: #222226;
+      --accent: #1d9bf0;
+      --accent-hover: #1a8cd8;
+      --accent-glow: rgba(29, 155, 240, 0.35);
+      --rec: #f4212e;
+      --text: #e7e9ea;
+      --text-muted: #71767b;
+      --text-sub: #a0a5ab;
+      --safe-bottom: env(safe-area-inset-bottom, 16px);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-bottom: calc(140px + var(--safe-bottom));
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), #7928ca);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-icon:active {
+      transform: scale(0.92);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 12px 14px;
+    }
+
+    /* Day Group */
+    .day-group {
+      margin-bottom: 24px;
+    }
+
+    .day-header {
+      position: sticky;
+      top: 57px;
+      z-index: 30;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      background: rgba(18, 18, 20, 0.9);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .day-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .day-badge {
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #202327;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-copy-day {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .btn-copy-day:active {
+      color: var(--accent);
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    /* Tweet Cards */
+    .tweet-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .tweet-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .tweet-time-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar-mini {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2a2a30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .tweet-time {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tweet-tag {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .tweet-ctrls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tweet-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .tweet-btn:active {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .tweet-btn.delete:active {
+      color: var(--rec);
+    }
+
+    .tweet-body {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text);
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .tweet-body.empty {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .tweet-photo-wrap {
+      margin-top: 10px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      max-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tweet-photo {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      object-fit: cover;
+      display: block;
+      cursor: zoom-in;
+    }
+
+    .edited-badge {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-left: 6px;
+      font-style: italic;
+    }
+
+    /* Bottom Input Bar */
+    .dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      padding: 10px 14px calc(10px + var(--safe-bottom));
+    }
+
+    .dock-container {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preview-box {
+      position: relative;
+      display: inline-block;
+      max-width: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--accent);
+    }
+
+    .preview-box img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .btn-remove-preview {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.75);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .textarea-wrap {
+      flex: 1;
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+
+    .textarea-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      max-height: 100px;
+      line-height: 1.4;
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Waveform Live Visualizer */
+    .waveform-container {
+      background: linear-gradient(135deg, rgba(20, 24, 33, 0.95) 0%, rgba(15, 17, 23, 0.98) 100%);
+      border: 1px solid rgba(29, 155, 240, 0.35);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(29, 155, 240, 0.15);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      animation: slideUpFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    @keyframes slideUpFade {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .waveform-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .rec-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(244, 33, 46, 0.15);
+      border: 1px solid rgba(244, 33, 46, 0.4);
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .rec-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--rec);
+      animation: recBlink 1s infinite;
+    }
+
+    @keyframes recBlink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    .rec-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--rec);
+    }
+
+    .rec-timer {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      margin-left: 2px;
+    }
+
+    .rec-status-text {
+      font-size: 0.76rem;
+      color: var(--text-sub);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 8px;
+      flex: 1;
+      text-align: center;
+    }
+
+    .btn-rec-done {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-rec-done:active {
+      transform: scale(0.94);
+      background: var(--accent-hover);
+    }
+
+    .waveform-visual-wrap {
+      width: 100%;
+      height: 48px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #waveformCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Action Buttons */
+    .btn-rec {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #1f2226;
+      border: 1px solid var(--border);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .btn-rec.listening {
+      background: var(--rec);
+      border-color: var(--rec);
+      color: #fff;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(244, 33, 46, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(244, 33, 46, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(244, 33, 46, 0); }
+    }
+
+    .btn-photo {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #1f2226;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .btn-photo:active {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .btn-send {
+      padding: 0 18px;
+      height: 44px;
+      border-radius: 22px;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .btn-send:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-send:not(:disabled):active {
+      background: var(--accent-hover);
+      transform: scale(0.98);
+    }
+
+    /* Modal (Edit & Zoom) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 500px;
+      background: #16181c;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      transform: translateY(20px);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.active .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+      outline: none;
+    }
+
+    .modal-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-photo-editor {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-photo-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+
+    .modal-footer {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      background: #111215;
+    }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      padding: 8px 18px;
+      border-radius: 20px;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Lightbox */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .lightbox-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-img {
+      max-width: 95vw;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: calc(16px + env(safe-area-inset-top, 0px));
+      right: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(29, 155, 240, 0.9);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      z-index: 110;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+      </div>
+      <h1>VoxTimeline</h1>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="btnExportAll" title="全Markdownコピー">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Timeline Feed -->
+  <main id="timelineFeed">
+    <!-- Day groups will be rendered here dynamically -->
+  </main>
+
+  <!-- Input Dock (Bottom) -->
+  <div class="dock">
+    <div class="dock-container">
+      <!-- Live Audio Waveform Visualizer -->
+      <div id="waveformContainer" class="waveform-container" style="display: none;">
+        <div class="waveform-header">
+          <div class="rec-badge">
+            <span class="rec-dot"></span>
+            <span class="rec-label">REC</span>
+            <span id="recTimer" class="rec-timer">00:00</span>
+          </div>
+          <span id="recStatusText" class="rec-status-text">音声入力中...話しかけてください</span>
+          <button type="button" class="btn-rec-done" id="btnDoneVoice">完了</button>
+        </div>
+        <div class="waveform-visual-wrap">
+          <canvas id="waveformCanvas" width="600" height="48"></canvas>
+        </div>
+      </div>
+
+      <div id="imagePreviewContainer" style="display: none;">
+        <div class="preview-box">
+          <img id="imagePreview" src="" alt="preview">
+          <button class="btn-remove-preview" id="btnRemoveImage">✕</button>
+        </div>
+      </div>
+      <div class="input-row">
+        <!-- Voice Rec Button -->
+        <button class="btn-rec" id="btnVoice" title="音声で入力">
+          <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
+          </svg>
+        </button>
+
+        <!-- Photo Select Button -->
+        <button class="btn-photo" id="btnTriggerPhoto" title="写真を添付">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+          </svg>
+        </button>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+        <!-- Textarea (Auto Expands) -->
+        <div class="textarea-wrap">
+          <textarea id="textInput" rows="1" placeholder="音声またはテキストで入力..."></textarea>
+        </div>
+
+        <!-- Confirm & Post Button -->
+        <button class="btn-send" id="btnPost" disabled>
+          <span>ポスト</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Tweet Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>投稿を編集</h3>
+        <button class="btn-icon" id="btnCloseEdit">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea class="modal-textarea" id="editTextArea" placeholder="つぶやき内容..."></textarea>
+        
+        <div class="modal-photo-editor" id="editPhotoArea">
+          <img id="editPhotoPreview" class="modal-photo-preview" src="" style="display: none;">
+          <button class="btn-secondary" id="btnChangePhoto">写真を変更</button>
+          <button class="btn-secondary" id="btnDeletePhoto" style="color: var(--rec); border-color: rgba(244,33,46,0.3); display: none;">写真削除</button>
+          <input type="file" id="editFileInput" accept="image/*" style="display: none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btnCancelEdit">キャンセル</button>
+        <button class="btn-primary" id="btnSaveEdit">更新する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Lightbox -->
+  <div class="lightbox-overlay" id="lightbox">
+    <button class="lightbox-close" id="btnCloseLightbox">✕</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="Enlarged photo">
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">クリップボードにコピーしました</div>
+
+  <!-- App Script -->
+  <script>
+    /* ==========================================================================
+       IndexedDB Helper (High capacity storage for Text & Images)
+       ========================================================================== */
+    const DB_NAME = 'vox_timeline_db';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'tweets';
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            store.createIndex('dateKey', 'dateKey', { unique: false });
+            store.createIndex('createdAt', 'createdAt', { unique: false });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbPut(tweet) {
+      const db = await initDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.put(tweet);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function dbGetAll() {
+      const db = await initDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbDelete(id) {
+      const db = await initDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    /* ==========================================================================
+       Audio / Haptic Feedback (Web Audio API)
+       ========================================================================== */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === 'start') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } else if (type === 'stop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(330, now + 0.12);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } else if (type === 'post') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(1040, now + 0.08);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        }
+      } catch (e) {
+        // AudioContext not allowed before user interaction
+      }
+    }
+
+    /* ==========================================================================
+       DOM Elements & State
+       ========================================================================== */
+    const timelineFeed = document.getElementById('timelineFeed');
+    const textInput = document.getElementById('textInput');
+    const btnPost = document.getElementById('btnPost');
+    const btnVoice = document.getElementById('btnVoice');
+    const btnTriggerPhoto = document.getElementById('btnTriggerPhoto');
+    const fileInput = document.getElementById('fileInput');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+    const btnRemoveImage = document.getElementById('btnRemoveImage');
+    const btnExportAll = document.getElementById('btnExportAll');
+    const toast = document.getElementById('toast');
+
+    // Waveform Elements
+    const waveformContainer = document.getElementById('waveformContainer');
+    const waveformCanvas = document.getElementById('waveformCanvas');
+    const recTimerEl = document.getElementById('recTimer');
+    const recStatusText = document.getElementById('recStatusText');
+    const btnDoneVoice = document.getElementById('btnDoneVoice');
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const btnCloseLightbox = document.getElementById('btnCloseLightbox');
+
+    // Edit Modal
+    const editModal = document.getElementById('editModal');
+    const editTextArea = document.getElementById('editTextArea');
+    const editPhotoPreview = document.getElementById('editPhotoPreview');
+    const btnChangePhoto = document.getElementById('btnChangePhoto');
+    const btnDeletePhoto = document.getElementById('btnDeletePhoto');
+    const editFileInput = document.getElementById('editFileInput');
+    const btnCloseEdit = document.getElementById('btnCloseEdit');
+    const btnCancelEdit = document.getElementById('btnCancelEdit');
+    const btnSaveEdit = document.getElementById('btnSaveEdit');
+
+    let currentAttachedImage = null; // dataURL
+    let isListening = false;
+    let recognition = null;
+    let editingTweetId = null;
+    let editingAttachedImage = null; // dataURL or null
+
+    /* ==========================================================================
+       Live Audio Waveform Visualizer (Web Audio API AnalyserNode)
+       ========================================================================== */
+    let micStream = null;
+    let micAudioSource = null;
+    let micAnalyser = null;
+    let waveformAnimId = null;
+    let recTimerInterval = null;
+    let recSeconds = 0;
+    let prevBarHeights = [];
+
+    function startWaveformVisualizer() {
+      if (waveformContainer) waveformContainer.style.display = 'block';
+      recSeconds = 0;
+      if (recTimerEl) recTimerEl.textContent = '00:00';
+      if (recStatusText) recStatusText.textContent = '音声入力中...話しかけてください';
+
+      clearInterval(recTimerInterval);
+      recTimerInterval = setInterval(() => {
+        recSeconds++;
+        const mins = String(Math.floor(recSeconds / 60)).padStart(2, '0');
+        const secs = String(recSeconds % 60).padStart(2, '0');
+        if (recTimerEl) recTimerEl.textContent = `${mins}:${secs}`;
+      }, 1000);
+
+      // Start animation loop immediately!
+      if (waveformAnimId) {
+        cancelAnimationFrame(waveformAnimId);
+        waveformAnimId = null;
+      }
+      drawWaveform();
+
+      // Connect microphone stream asynchronously
+      try {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        if (!micStream && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+            if (!isListening) {
+              stream.getTracks().forEach(t => t.stop());
+              return;
+            }
+            micStream = stream;
+            if (!micAnalyser) {
+              micAnalyser = audioCtx.createAnalyser();
+              micAnalyser.fftSize = 128;
+              micAnalyser.smoothingTimeConstant = 0.78;
+            }
+            if (!micAudioSource) {
+              micAudioSource = audioCtx.createMediaStreamSource(micStream);
+              micAudioSource.connect(micAnalyser);
+            }
+          }).catch(err => {
+            console.warn('Microphone permission not granted or stream unavailable:', err);
+          });
+        }
+      } catch (err) {
+        console.warn('AudioContext / mic setup error:', err);
+      }
+    }
+
+    function stopWaveformVisualizer() {
+      if (waveformContainer) waveformContainer.style.display = 'none';
+      clearInterval(recTimerInterval);
+      recTimerInterval = null;
+      if (waveformAnimId) {
+        cancelAnimationFrame(waveformAnimId);
+        waveformAnimId = null;
+      }
+      if (micStream) {
+        micStream.getTracks().forEach(track => track.stop());
+        micStream = null;
+      }
+      if (micAudioSource) {
+        try { micAudioSource.disconnect(); } catch (e) {}
+        micAudioSource = null;
+      }
+    }
+
+    function drawWaveform() {
+      if (!isListening) return;
+
+      const canvas = waveformCanvas;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+
+      const displayWidth = canvas.clientWidth || 360;
+      const displayHeight = canvas.clientHeight || 48;
+      if (canvas.width !== Math.floor(displayWidth * dpr) || canvas.height !== Math.floor(displayHeight * dpr)) {
+        canvas.width = Math.floor(displayWidth * dpr);
+        canvas.height = Math.floor(displayHeight * dpr);
+      }
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      const width = displayWidth;
+      const height = displayHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const barCount = 40;
+      const barWidth = 3.5;
+      const totalBarWidth = barCount * barWidth;
+      const barGap = (width - totalBarWidth) / (barCount + 1);
+      const centerY = height / 2;
+
+      let freqData = null;
+      let averageVol = 0;
+      if (micAnalyser) {
+        freqData = new Uint8Array(micAnalyser.frequencyBinCount);
+        micAnalyser.getByteFrequencyData(freqData);
+        let sum = 0;
+        for (let i = 0; i < freqData.length; i++) sum += freqData[i];
+        averageVol = sum / freqData.length;
+      }
+
+      if (prevBarHeights.length !== barCount) {
+        prevBarHeights = new Array(barCount).fill(6);
+      }
+
+      const time = performance.now() * 0.0035;
+
+      for (let i = 0; i < barCount; i++) {
+        let targetHeight = 6;
+        if (freqData && averageVol > 3) {
+          // Center-weighted distribution with dynamic frequency bins
+          const distFromCenter = Math.abs(i - barCount / 2) / (barCount / 2);
+          const freqIndex = Math.min(
+            freqData.length - 1,
+            Math.floor((1 - distFromCenter * 0.65) * (freqData.length * 0.75))
+          );
+          const val = freqData[freqIndex] || 0;
+          targetHeight = Math.max(6, (val / 255) * (height - 6));
+        } else {
+          // Fluid breathing ambient sine animation
+          const wave1 = Math.sin(time + i * 0.22);
+          const wave2 = Math.cos(time * 0.8 + i * 0.15);
+          targetHeight = 6 + Math.max(0, (wave1 + wave2) * 8 + Math.sin(time * 2 + i * 0.35) * 5);
+        }
+
+        prevBarHeights[i] = prevBarHeights[i] * 0.65 + targetHeight * 0.35;
+        const barH = Math.max(4, prevBarHeights[i]);
+
+        const x = barGap + i * (barWidth + barGap);
+        const y = centerY - barH / 2;
+
+        const gradient = ctx.createLinearGradient(0, y, 0, y + barH);
+        gradient.addColorStop(0, '#38bdf8');
+        gradient.addColorStop(0.5, '#1d9bf0');
+        gradient.addColorStop(1, '#c084fc');
+
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = 'rgba(29, 155, 240, 0.45)';
+        ctx.shadowBlur = 6;
+
+        const r = Math.min(barWidth / 2, barH / 2);
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, y, barWidth, barH, r);
+        } else {
+          ctx.rect(x, y, barWidth, barH);
+        }
+        ctx.fill();
+      }
+
+      ctx.restore();
+      waveformAnimId = requestAnimationFrame(drawWaveform);
+    }
+
+    if (btnDoneVoice) {
+      btnDoneVoice.addEventListener('click', () => {
+        if (isListening) toggleListening();
+      });
+    }
+
+    /* ==========================================================================
+       Speech Recognition (Web Speech API)
+       ========================================================================== */
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.lang = 'ja-JP';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      let sessionBaseText = '';
+
+      recognition.onstart = () => {
+        // Recognition active
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        // Update input value without posting automatically!
+        textInput.value = sessionBaseText + transcript;
+        autoResizeTextarea();
+        validatePostButton();
+        if (recStatusText) {
+          recStatusText.textContent = transcript ? `「${transcript.slice(-22)}」` : '音声入力中...話しかけてください';
+        }
+      };
+
+      recognition.onerror = (e) => {
+        console.warn('Speech recognition warning/error:', e.error);
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+          showToast('マイクへのアクセスが許可されていません');
+          stopListening();
+        }
+      };
+
+      recognition.onend = () => {
+        if (isListening) {
+          try {
+            recognition.start();
+          } catch (e) {
+            stopListening();
+          }
+        }
+      };
+    } else {
+      btnVoice.title = '音声認識非対応（マイク波形のみ動作します）';
+    }
+
+    function toggleListening() {
+      if (isListening) {
+        if (recognition) {
+          try { recognition.stop(); } catch (e) {}
+        }
+        stopListening();
+      } else {
+        isListening = true;
+        btnVoice.classList.add('listening');
+        sessionBaseText = textInput.value;
+        if (sessionBaseText.length > 0 && !sessionBaseText.endsWith(' ')) {
+          sessionBaseText += ' ';
+        }
+        playSound('start');
+        startWaveformVisualizer();
+        showToast('音声認識中...（話してください）');
+
+        if (recognition) {
+          try {
+            recognition.start();
+          } catch (e) {
+            console.warn('SpeechRecognition start error:', e);
+          }
+        }
+      }
+    }
+
+    function stopListening() {
+      if (isListening) {
+        isListening = false;
+        btnVoice.classList.remove('listening');
+        stopWaveformVisualizer();
+        playSound('stop');
+      }
+    }
+
+    btnVoice.addEventListener('click', toggleListening);
+
+    /* ==========================================================================
+       Photo Upload & Resizing (Client-side optimization)
+       ========================================================================== */
+    btnTriggerPhoto.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      processImageFile(file, (dataUrl) => {
+        currentAttachedImage = dataUrl;
+        imagePreview.src = dataUrl;
+        imagePreviewContainer.style.display = 'block';
+        validatePostButton();
+      });
+      fileInput.value = '';
+    });
+
+    btnRemoveImage.addEventListener('click', () => {
+      currentAttachedImage = null;
+      imagePreview.src = '';
+      imagePreviewContainer.style.display = 'none';
+      validatePostButton();
+    });
+
+    function processImageFile(file, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Max dimension 1280px to save storage & retain HD quality
+          const maxDim = 1280;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          callback(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ==========================================================================
+       Input validation & Textarea auto-sizing
+       ========================================================================== */
+    function autoResizeTextarea() {
+      textInput.style.height = 'auto';
+      textInput.style.height = Math.min(textInput.scrollHeight, 100) + 'px';
+    }
+
+    function validatePostButton() {
+      const hasText = textInput.value.trim().length > 0;
+      const hasImage = !!currentAttachedImage;
+      btnPost.disabled = !(hasText || hasImage);
+    }
+
+    textInput.addEventListener('input', () => {
+      autoResizeTextarea();
+      validatePostButton();
+    });
+
+    /* ==========================================================================
+       Post Tweet (Confirm & Post Flow)
+       ========================================================================== */
+    async function handlePost() {
+      const text = textInput.value.trim();
+      const photo = currentAttachedImage;
+
+      if (!text && !photo) return;
+
+      if (isListening && recognition) {
+        recognition.stop();
+        stopListening();
+      }
+
+      const now = new Date();
+      const tweet = {
+        id: 'tw_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+        text: text,
+        photo: photo || null,
+        createdAt: now.getTime(),
+        dateKey: formatDateKey(now), // '2026-11-05'
+        timeStr: formatTime(now),    // '14:25'
+        updatedAt: null
+      };
+
+      await dbPut(tweet);
+      playSound('post');
+
+      // Reset Input
+      textInput.value = '';
+      currentAttachedImage = null;
+      imagePreview.src = '';
+      imagePreviewContainer.style.display = 'none';
+      autoResizeTextarea();
+      validatePostButton();
+
+      renderTimeline();
+      showToast('タイムラインにポストしました');
+    }
+
+    btnPost.addEventListener('click', handlePost);
+
+    /* ==========================================================================
+       Timeline Rendering & Grouping by Date
+       ========================================================================== */
+    async function renderTimeline() {
+      const tweets = await dbGetAll();
+      tweets.sort((a, b) => b.createdAt - a.createdAt); // Newest first
+
+      if (tweets.length === 0) {
+        timelineFeed.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🎙️</div>
+            <p>まだ投稿がありません。<br>話しかけるか文字を入力して、<br>今日の一コマをつぶやいてみましょう！</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Group by dateKey
+      const groups = {};
+      tweets.forEach(t => {
+        if (!groups[t.dateKey]) groups[t.dateKey] = [];
+        groups[t.dateKey].push(t);
+      });
+
+      timelineFeed.innerHTML = '';
+
+      for (const [dateKey, dayTweets] of Object.entries(groups)) {
+        const groupEl = document.createElement('div');
+        groupEl.className = 'day-group';
+
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'day-header';
+        dayHeader.innerHTML = `
+          <div class="day-title">
+            <span>📅 ${formatDateHeader(dateKey)}</span>
+            <span class="day-badge">${dayTweets.length}件</span>
+          </div>
+          <button class="btn-copy-day" data-date="${dateKey}" title="この日をMarkdownコピー">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+            <span>MDコピー</span>
+          </button>
+        `;
+
+        groupEl.appendChild(dayHeader);
+
+        dayTweets.forEach(t => {
+          const card = document.createElement('div');
+          card.className = 'tweet-card';
+          card.id = `card_${t.id}`;
+
+          let photoHtml = '';
+          if (t.photo) {
+            photoHtml = `
+              <div class="tweet-photo-wrap">
+                <img class="tweet-photo" src="${t.photo}" alt="attached" loading="lazy" data-zoom="${t.photo}">
+              </div>
+            `;
+          }
+
+          const editedLabel = t.updatedAt ? `<span class="edited-badge">(編集済)</span>` : '';
+
+          card.innerHTML = `
+            <div class="tweet-meta">
+              <div class="tweet-time-wrap">
+                <div class="avatar-mini">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+                <span class="tweet-time">${t.timeStr}</span>
+                <span class="tweet-tag">POST</span>
+                ${editedLabel}
+              </div>
+              <div class="tweet-ctrls">
+                <button class="tweet-btn edit" data-id="${t.id}" title="編集">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                  </svg>
+                </button>
+                <button class="tweet-btn delete" data-id="${t.id}" title="削除">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="tweet-body ${!t.text ? 'empty' : ''}">${escapeHTML(t.text) || '(画像のみ)'}</div>
+            ${photoHtml}
+          `;
+
+          groupEl.appendChild(card);
+        });
+
+        timelineFeed.appendChild(groupEl);
+      }
+
+      attachCardEventListeners();
+    }
+
+    function attachCardEventListeners() {
+      // Zoom Photo
+      document.querySelectorAll('.tweet-photo').forEach(img => {
+        img.onclick = () => {
+          lightboxImg.src = img.getAttribute('data-zoom');
+          lightbox.classList.add('active');
+        };
+      });
+
+      // Delete Tweet
+      document.querySelectorAll('.tweet-btn.delete').forEach(btn => {
+        btn.onclick = async () => {
+          const id = btn.getAttribute('data-id');
+          if (confirm('この投稿を削除しますか？')) {
+            await dbDelete(id);
+            renderTimeline();
+            showToast('投稿を削除しました');
+          }
+        };
+      });
+
+      // Edit Tweet
+      document.querySelectorAll('.tweet-btn.edit').forEach(btn => {
+        btn.onclick = async () => {
+          const id = btn.getAttribute('data-id');
+          openEditModal(id);
+        };
+      });
+
+      // Copy Day Markdown
+      document.querySelectorAll('.btn-copy-day').forEach(btn => {
+        btn.onclick = async () => {
+          const dateKey = btn.getAttribute('data-date');
+          await copyDayAsMarkdown(dateKey);
+        };
+      });
+    }
+
+    /* ==========================================================================
+       Edit Modal Flow (Text & Photo editing)
+       ========================================================================== */
+    async function openEditModal(id) {
+      const tweets = await dbGetAll();
+      const tweet = tweets.find(t => t.id === id);
+      if (!tweet) return;
+
+      editingTweetId = id;
+      editingAttachedImage = tweet.photo;
+      editTextArea.value = tweet.text || '';
+
+      if (editingAttachedImage) {
+        editPhotoPreview.src = editingAttachedImage;
+        editPhotoPreview.style.display = 'block';
+        btnDeletePhoto.style.display = 'inline-block';
+      } else {
+        editPhotoPreview.src = '';
+        editPhotoPreview.style.display = 'none';
+        btnDeletePhoto.style.display = 'none';
+      }
+
+      editModal.classList.add('active');
+    }
+
+    btnChangePhoto.addEventListener('click', () => editFileInput.click());
+
+    editFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      processImageFile(file, (dataUrl) => {
+        editingAttachedImage = dataUrl;
+        editPhotoPreview.src = dataUrl;
+        editPhotoPreview.style.display = 'block';
+        btnDeletePhoto.style.display = 'inline-block';
+      });
+      editFileInput.value = '';
+    });
+
+    btnDeletePhoto.addEventListener('click', () => {
+      editingAttachedImage = null;
+      editPhotoPreview.src = '';
+      editPhotoPreview.style.display = 'none';
+      btnDeletePhoto.style.display = 'none';
+    });
+
+    function closeEditModal() {
+      editModal.classList.remove('active');
+      editingTweetId = null;
+      editingAttachedImage = null;
+    }
+
+    btnCloseEdit.addEventListener('click', closeEditModal);
+    btnCancelEdit.addEventListener('click', closeEditModal);
+
+    btnSaveEdit.addEventListener('click', async () => {
+      if (!editingTweetId) return;
+
+      const tweets = await dbGetAll();
+      const tweet = tweets.find(t => t.id === editingTweetId);
+      if (!tweet) return;
+
+      const newText = editTextArea.value.trim();
+      if (!newText && !editingAttachedImage) {
+        alert('テキストまたは写真のどちらかは必要です。');
+        return;
+      }
+
+      tweet.text = newText;
+      tweet.photo = editingAttachedImage;
+      tweet.updatedAt = Date.now();
+
+      await dbPut(tweet);
+      closeEditModal();
+      renderTimeline();
+      showToast('投稿を更新しました');
+    });
+
+    /* ==========================================================================
+       Lightbox & Modal Outside Click
+       ========================================================================== */
+    btnCloseLightbox.addEventListener('click', () => lightbox.classList.remove('active'));
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) lightbox.classList.remove('active');
+    });
+
+    /* ==========================================================================
+       Markdown Export (For Obsidian / Apple Notes)
+       ========================================================================== */
+    async function copyDayAsMarkdown(dateKey) {
+      const tweets = await dbGetAll();
+      const dayTweets = tweets.filter(t => t.dateKey === dateKey);
+      dayTweets.sort((a, b) => a.createdAt - b.createdAt); // Chronological
+
+      let md = `## 📅 ${formatDateHeader(dateKey)}\n\n`;
+      dayTweets.forEach(t => {
+        const photoNote = t.photo ? ' [📷 写真付き]' : '';
+        md += `- **${t.timeStr}** ${t.text}${photoNote}\n`;
+      });
+
+      await navigator.clipboard.writeText(md);
+      showToast(`${dateKey} のログをコピーしました`);
+    }
+
+    btnExportAll.addEventListener('click', async () => {
+      const tweets = await dbGetAll();
+      if (tweets.length === 0) {
+        showToast('エクスポートするデータがありません');
+        return;
+      }
+
+      tweets.sort((a, b) => a.createdAt - b.createdAt);
+
+      const groups = {};
+      tweets.forEach(t => {
+        if (!groups[t.dateKey]) groups[t.dateKey] = [];
+        groups[t.dateKey].push(t);
+      });
+
+      let fullMd = `# VoxTimeline エクスポート\n\n`;
+      for (const [dateKey, dayTweets] of Object.entries(groups)) {
+        fullMd += `## 📅 ${formatDateHeader(dateKey)}\n\n`;
+        dayTweets.forEach(t => {
+          const photoNote = t.photo ? ' [📷 写真付き]' : '';
+          fullMd += `- **${t.timeStr}** ${t.text}${photoNote}\n`;
+        });
+        fullMd += `\n---\n\n`;
+      }
+
+      await navigator.clipboard.writeText(fullMd);
+      showToast('全データをMarkdownコピーしました');
+    });
+
+    /* ==========================================================================
+       Utilities
+       ========================================================================== */
+    function formatDateKey(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function formatTime(d) {
+      const h = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return `${h}:${min}`;
+    }
+
+    function formatDateHeader(dateKey) {
+      const parts = dateKey.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      const days = ['日', '月', '火', '水', '木', '金', '土'];
+      return `${parts[0]}年${Number(parts[1])}月${Number(parts[2])}日 (${days[d.getDay()]})`;
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    // Init App
+    renderTimeline();
+  </script>
+</body>
+</html>
