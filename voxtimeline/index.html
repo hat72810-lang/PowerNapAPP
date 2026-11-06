@@ -377,8 +377,11 @@
       font-family: inherit;
       resize: none;
       outline: none;
-      max-height: 100px;
-      line-height: 1.4;
+      max-height: 120px;
+      line-height: 1.45;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
     }
 
     textarea::placeholder {
@@ -1258,7 +1261,7 @@
 
         // Display: base + all committed speech + current interim words
         textInput.value = sessionBaseText + committedSpeechText + interimSpeechText;
-        autoResizeTextarea();
+        autoResizeTextarea(true);
         validatePostButton();
 
         // Waveform preview text: show latest words being spoken
@@ -1352,7 +1355,7 @@
         }
 
         textInput.value = sessionBaseText + committedSpeechText;
-        autoResizeTextarea();
+        autoResizeTextarea(true);
         validatePostButton();
 
         sessionBaseText = '';
@@ -1421,9 +1424,17 @@
     /* ==========================================================================
        Input validation & Textarea auto-sizing
        ========================================================================== */
-    function autoResizeTextarea() {
+    function autoResizeTextarea(scrollToBottom = true) {
       textInput.style.height = 'auto';
-      textInput.style.height = Math.min(textInput.scrollHeight, 100) + 'px';
+      const targetHeight = Math.min(textInput.scrollHeight, 120);
+      textInput.style.height = targetHeight + 'px';
+
+      if (scrollToBottom) {
+        textInput.scrollTop = textInput.scrollHeight;
+        requestAnimationFrame(() => {
+          textInput.scrollTop = textInput.scrollHeight;
+        });
+      }
     }
 
     function validatePostButton() {
@@ -1433,7 +1444,7 @@
     }
 
     textInput.addEventListener('input', () => {
-      autoResizeTextarea();
+      autoResizeTextarea(true);
       validatePostButton();
     });
 
@@ -1472,7 +1483,7 @@
       currentAttachedImage = null;
       imagePreview.src = '';
       imagePreviewContainer.style.display = 'none';
-      autoResizeTextarea();
+      autoResizeTextarea(false);
       validatePostButton();
 
       await renderTimeline(true);
