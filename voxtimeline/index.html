@@ -379,9 +379,8 @@
       outline: none;
       max-height: 120px;
       line-height: 1.45;
-      overflow-y: auto;
+      overflow-y: scroll;
       -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
     }
 
     textarea::placeholder {
@@ -1424,10 +1423,25 @@
     /* ==========================================================================
        Input validation & Textarea auto-sizing
        ========================================================================== */
+    let lastTextLength = 0;
+    const MAX_TEXTAREA_HEIGHT = 120;
+
     function autoResizeTextarea(scrollToBottom = true) {
-      textInput.style.height = 'auto';
-      const targetHeight = Math.min(textInput.scrollHeight, 120);
-      textInput.style.height = targetHeight + 'px';
+      const currentVal = textInput.value;
+      const isShrinking = currentVal.length < lastTextLength;
+      lastTextLength = currentVal.length;
+
+      // When text is already capped at MAX_TEXTAREA_HEIGHT and is growing,
+      // NEVER set height to 'auto' because that resets scrollTop to 0 and breaks auto-scrolling!
+      const currentH = parseFloat(textInput.style.height) || textInput.clientHeight;
+
+      if (isShrinking || currentH < MAX_TEXTAREA_HEIGHT || !textInput.style.height) {
+        textInput.style.height = 'auto';
+        const targetHeight = Math.min(textInput.scrollHeight, MAX_TEXTAREA_HEIGHT);
+        textInput.style.height = targetHeight + 'px';
+      } else {
+        textInput.style.height = MAX_TEXTAREA_HEIGHT + 'px';
+      }
 
       if (scrollToBottom) {
         textInput.scrollTop = textInput.scrollHeight;
