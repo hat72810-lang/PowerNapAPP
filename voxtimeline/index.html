@@ -1221,9 +1221,10 @@
        ========================================================================== */
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    let sessionBaseText = '';
-    let committedSpeechText = '';
-    let currentSessionText = '';
+    let sessionBaseText = '';      // Text that already existed in textarea before voice input
+    let committedSpeechText = '';  // Text permanently committed from finalized results
+    let interimSpeechText = '';    // Ongoing interim words being actively spoken
+    let lastCommittedIndex = -1;   // Track highest result index committed in current recognition instance
 
     if (SpeechRecognition) {
       recognition = new SpeechRecognition();
@@ -1232,31 +1233,37 @@
       recognition.interimResults = true;
 
       recognition.onstart = () => {
-        // Recognition active
+        lastCommittedIndex = -1;
       };
 
       recognition.onresult = (event) => {
-        let sessionFinal = '';
-        let sessionInterim = '';
+        let interim = '';
 
-        for (let i = 0; i < event.results.length; ++i) {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
           const res = event.results[i];
           const text = res[0].transcript;
           if (res.isFinal) {
-            sessionFinal += text;
+            // Guard against duplicate commits if resultIndex jumps backward
+            if (i > lastCommittedIndex) {
+              committedSpeechText += text;
+              lastCommittedIndex = i;
+            }
           } else {
-            sessionInterim += text;
+            interim += text;
           }
         }
 
-        currentSessionText = sessionFinal + sessionInterim;
-        textInput.value = sessionBaseText + committedSpeechText + currentSessionText;
+        interimSpeechText = interim;
+
+        // Display: base + all committed speech + current interim words
+        textInput.value = sessionBaseText + committedSpeechText + interimSpeechText;
         autoResizeTextarea();
         validatePostButton();
 
-        const latestText = sessionInterim || (sessionFinal ? sessionFinal.slice(-22) : (committedSpeechText ? committedSpeechText.slice(-22) : ''));
+        // Waveform preview text: show latest words being spoken
+        const latestPreview = interimSpeechText || (committedSpeechText ? committedSpeechText.slice(-22) : '');
         if (recStatusText) {
-          recStatusText.textContent = latestText ? `「${latestText}」` : '音声入力中...話しかけてください';
+          recStatusText.textContent = latestPreview ? `「${latestPreview}」` : '音声入力中...話しかけてください';
         }
       };
 
@@ -1269,23 +1276,28 @@
       };
 
       recognition.onend = () => {
-        // Commit text recognized in this session so it is never lost on restarts
-        if (currentSessionText) {
-          committedSpeechText += currentSessionText;
-          currentSessionText = '';
+        // If there was any lingering interim speech that wasn't finalized before session end, commit it now!
+        if (interimSpeechText) {
+          committedSpeechText += interimSpeechText;
+          interimSpeechText = '';
         }
+        lastCommittedIndex = -1;
 
-        // Auto-restart if user is still in listening mode (e.g. after iOS Safari pause)
+        // Auto-restart if user has not tapped stop
         if (isListening) {
-          try {
-            recognition.start();
-          } catch (e) {
-            setTimeout(() => {
-              if (isListening) {
-                try { recognition.start(); } catch (err) {}
+          setTimeout(() => {
+            if (isListening) {
+              try {
+                recognition.start();
+              } catch (e) {
+                setTimeout(() => {
+                  if (isListening) {
+                    try { recognition.start(); } catch (err) {}
+                  }
+                }, 300);
               }
-            }, 150);
-          }
+            }
+          }, 150);
         }
       };
     } else {
@@ -1304,11 +1316,12 @@
 
         // Capture current text in textarea as the base
         sessionBaseText = textInput.value;
-        if (sessionBaseText.length > 0 && !sessionBaseText.endsWith(' ')) {
+        if (sessionBaseText.length > 0 && !sessionBaseText.endsWith(' ') && !sessionBaseText.endsWith('\n')) {
           sessionBaseText += ' ';
         }
         committedSpeechText = '';
-        currentSessionText = '';
+        interimSpeechText = '';
+        lastCommittedIndex = -1;
 
         playSound('start');
         startWaveformVisualizer();
@@ -1331,17 +1344,20 @@
         stopWaveformVisualizer();
         playSound('stop');
 
-        // Finalize all speech text into textarea
-        if (currentSessionText) {
-          committedSpeechText += currentSessionText;
-          currentSessionText = '';
+        // Commit whatever interim speech remained
+        if (interimSpeechText) {
+          committedSpeechText += interimSpeechText;
+          interimSpeechText = '';
         }
+
         textInput.value = sessionBaseText + committedSpeechText;
         autoResizeTextarea();
         validatePostButton();
 
         sessionBaseText = '';
         committedSpeechText = '';
+        interimSpeechText = '';
+        lastCommittedIndex = -1;
       }
     }
 
@@ -1424,15 +1440,17 @@
        Post Tweet (Confirm & Post Flow)
        ========================================================================== */
     async function handlePost() {
+      if (isListening) {
+        if (recognition) {
+          try { recognition.stop(); } catch (e) {}
+        }
+        stopListening();
+      }
+
       const text = textInput.value.trim();
       const photo = currentAttachedImage;
 
       if (!text && !photo) return;
-
-      if (isListening && recognition) {
-        recognition.stop();
-        stopListening();
-      }
 
       const now = new Date();
       const tweet = {
