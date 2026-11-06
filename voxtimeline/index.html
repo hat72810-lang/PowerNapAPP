@@ -1221,29 +1221,42 @@
        ========================================================================== */
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    let sessionBaseText = '';
+    let committedSpeechText = '';
+    let currentSessionText = '';
+
     if (SpeechRecognition) {
       recognition = new SpeechRecognition();
       recognition.lang = 'ja-JP';
       recognition.continuous = true;
       recognition.interimResults = true;
 
-      let sessionBaseText = '';
-
       recognition.onstart = () => {
         // Recognition active
       };
 
       recognition.onresult = (event) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          transcript += event.results[i][0].transcript;
+        let sessionFinal = '';
+        let sessionInterim = '';
+
+        for (let i = 0; i < event.results.length; ++i) {
+          const res = event.results[i];
+          const text = res[0].transcript;
+          if (res.isFinal) {
+            sessionFinal += text;
+          } else {
+            sessionInterim += text;
+          }
         }
-        // Update input value without posting automatically!
-        textInput.value = sessionBaseText + transcript;
+
+        currentSessionText = sessionFinal + sessionInterim;
+        textInput.value = sessionBaseText + committedSpeechText + currentSessionText;
         autoResizeTextarea();
         validatePostButton();
+
+        const latestText = sessionInterim || (sessionFinal ? sessionFinal.slice(-22) : (committedSpeechText ? committedSpeechText.slice(-22) : ''));
         if (recStatusText) {
-          recStatusText.textContent = transcript ? `「${transcript.slice(-22)}」` : '音声入力中...話しかけてください';
+          recStatusText.textContent = latestText ? `「${latestText}」` : '音声入力中...話しかけてください';
         }
       };
 
@@ -1256,11 +1269,22 @@
       };
 
       recognition.onend = () => {
+        // Commit text recognized in this session so it is never lost on restarts
+        if (currentSessionText) {
+          committedSpeechText += currentSessionText;
+          currentSessionText = '';
+        }
+
+        // Auto-restart if user is still in listening mode (e.g. after iOS Safari pause)
         if (isListening) {
           try {
             recognition.start();
           } catch (e) {
-            stopListening();
+            setTimeout(() => {
+              if (isListening) {
+                try { recognition.start(); } catch (err) {}
+              }
+            }, 150);
           }
         }
       };
@@ -1277,10 +1301,15 @@
       } else {
         isListening = true;
         btnVoice.classList.add('listening');
+
+        // Capture current text in textarea as the base
         sessionBaseText = textInput.value;
         if (sessionBaseText.length > 0 && !sessionBaseText.endsWith(' ')) {
           sessionBaseText += ' ';
         }
+        committedSpeechText = '';
+        currentSessionText = '';
+
         playSound('start');
         startWaveformVisualizer();
         showToast('音声認識中...（話してください）');
@@ -1301,6 +1330,18 @@
         btnVoice.classList.remove('listening');
         stopWaveformVisualizer();
         playSound('stop');
+
+        // Finalize all speech text into textarea
+        if (currentSessionText) {
+          committedSpeechText += currentSessionText;
+          currentSessionText = '';
+        }
+        textInput.value = sessionBaseText + committedSpeechText;
+        autoResizeTextarea();
+        validatePostButton();
+
+        sessionBaseText = '';
+        committedSpeechText = '';
       }
     }
 
