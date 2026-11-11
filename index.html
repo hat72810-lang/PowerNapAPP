@@ -74,6 +74,34 @@
           <h2 class="step-title">コーヒータイム</h2>
           <p class="step-subtitle">仮眠直前のカフェイン摂取で目覚めが驚くほどスッキリ。</p>
 
+          <!-- 🔥 仮眠履歴・連続日数（ストリーク）コンパクトカード -->
+          <button type="button" id="btn-open-stats" class="streak-summary-card" title="タップして仮眠履歴・スタンプを表示">
+            <div class="streak-stat-item">
+              <span class="streak-stat-icon">🔥</span>
+              <div class="streak-stat-text">
+                <span class="streak-stat-val"><strong id="stat-streak-days">0</strong>日</span>
+                <span class="streak-stat-label">連続達成</span>
+              </div>
+            </div>
+            <div class="streak-stat-divider"></div>
+            <div class="streak-stat-item">
+              <span class="streak-stat-icon">⚡</span>
+              <div class="streak-stat-text">
+                <span class="streak-stat-val"><strong id="stat-total-sessions">0</strong>回</span>
+                <span class="streak-stat-label">累計回数</span>
+              </div>
+            </div>
+            <div class="streak-stat-divider"></div>
+            <div class="streak-stat-item">
+              <span class="streak-stat-icon">⏱</span>
+              <div class="streak-stat-text">
+                <span class="streak-stat-val"><strong id="stat-total-minutes">0</strong>分</span>
+                <span class="streak-stat-label">累計時間</span>
+              </div>
+            </div>
+            <span class="streak-card-arrow">履歴 ➔</span>
+          </button>
+
           <div class="hero-graphic-box">
             <div class="coffee-illustration">
               <div class="splash-aura-glow-inline"></div>
@@ -101,9 +129,9 @@
               <span>ワンタップ・オートスタート</span>
             </div>
             <div class="auto-start-grid">
-              <button type="button" class="btn-auto-start demo" data-auto-seconds="10">
-                <span class="auto-time">10秒</span>
-                <span class="auto-tag">デモ</span>
+              <button type="button" class="btn-auto-start" data-auto-minutes="5">
+                <span class="auto-time">5分</span>
+                <span class="auto-tag">ショート</span>
               </button>
               <button type="button" class="btn-auto-start" data-auto-minutes="10">
                 <span class="auto-time">10分</span>
@@ -262,6 +290,10 @@
 
             <div class="section-label" style="margin-top: 12px;">パワーナップ時間の選択</div>
             <div class="duration-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+              <button class="duration-btn" data-minutes="5">
+                <span class="duration-val">5</span>
+                <span class="duration-unit">MIN</span>
+              </button>
               <button class="duration-btn" data-minutes="10">
                 <span class="duration-val">10</span>
                 <span class="duration-unit">MIN</span>
@@ -273,10 +305,6 @@
               <button class="duration-btn" data-minutes="20">
                 <span class="duration-val">20</span>
                 <span class="duration-unit">MIN</span>
-              </button>
-              <button class="duration-btn" data-seconds="10" style="border-color: rgba(255, 234, 0, 0.4);">
-                <span class="duration-val" style="color: #ffea00;">10s</span>
-                <span class="duration-unit" style="color: #ffea00;">DEMO</span>
               </button>
             </div>
 
@@ -497,9 +525,22 @@
             </svg>
           </div>
 
-          <p class="step-subtitle" style="margin-bottom: 8px;">
+          <p id="step7-complete-desc" class="step-subtitle" style="margin-bottom: 8px;">
             15分間の理想的なパワーナップと覚醒セッションが完了しました。
           </p>
+
+          <!-- 🔥 セッション完了時の達成＆ストリーク表示 -->
+          <div class="step7-achievement-card" id="step7-achievement-card">
+            <div class="achievement-streak-badge">
+              <span>🔥</span>
+              <span id="step7-streak-text">1日連続達成！</span>
+            </div>
+            <div class="achievement-stats-row">
+              <span>累計 <strong id="step7-total-sessions">1</strong>回</span>
+              <span class="achievement-dot">•</span>
+              <span>累計リセット <strong id="step7-total-minutes">15</strong>分</span>
+            </div>
+          </div>
 
           <div class="info-item" style="background: rgba(0, 229, 255, 0.05); border-color: rgba(0, 229, 255, 0.15);">
             <div class="info-text-group" style="text-align: center; width: 100%;">
@@ -781,8 +822,72 @@
     </div>
   </div>
 
-  <script src="mudras.js?v=20261031_quick_sound"></script>
-  <script src="audioEngine.js?v=20261031_quick_sound"></script>
-  <script src="app.js?v=20261031_quick_compact"></script>
+  <!-- ================= STATS & STREAK HISTORY MODAL ================= -->
+  <div id="stats-modal" class="manual-modal" aria-hidden="true">
+    <div class="manual-modal-backdrop" id="stats-backdrop"></div>
+    <div class="manual-modal-container">
+      <div class="manual-header">
+        <div class="manual-header-title">
+          <span style="font-size: 1.2rem;">🔥</span>
+          <span>パワーナップ実績 ＆ 履歴</span>
+        </div>
+        <button id="btn-close-stats" class="manual-close-btn" aria-label="閉じる">✕</button>
+      </div>
+
+      <div class="manual-body">
+        <!-- 3大サマリーカード -->
+        <div class="stats-modal-grid">
+          <div class="stats-modal-box highlight">
+            <span class="stats-box-icon">🔥</span>
+            <div class="stats-box-val"><strong id="modal-streak-days">0</strong><span>日</span></div>
+            <div class="stats-box-label">連続達成ストリーク</div>
+          </div>
+          <div class="stats-modal-box">
+            <span class="stats-box-icon">⚡</span>
+            <div class="stats-box-val"><strong id="modal-total-sessions">0</strong><span>回</span></div>
+            <div class="stats-box-label">累計セッション</div>
+          </div>
+          <div class="stats-modal-box">
+            <span class="stats-box-icon">⏱</span>
+            <div class="stats-box-val"><strong id="modal-total-minutes">0</strong><span>分</span></div>
+            <div class="stats-box-label">累計脳リセット時間</div>
+          </div>
+        </div>
+
+        <!-- 直近7日間スタンプ -->
+        <div class="manual-card">
+          <div class="manual-card-tag cyan-tag">WEEKLY STAMP</div>
+          <h3>直近7日間の達成スタンプ</h3>
+          <div id="weekly-stamp-row" class="weekly-stamp-row">
+            <!-- JSで自動生成 -->
+          </div>
+        </div>
+
+        <!-- 履歴リスト -->
+        <div class="manual-card">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div>
+              <div class="manual-card-tag" style="margin-bottom: 4px;">HISTORY LOG</div>
+              <h3 style="margin-bottom: 0;">最近のセッション履歴</h3>
+            </div>
+            <button type="button" id="btn-clear-stats" class="btn-clear-stats">履歴リセット</button>
+          </div>
+          <div id="stats-history-list" class="stats-history-list">
+            <!-- JSで自動生成 -->
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; text-align: center;">
+          <button id="btn-stats-bottom-close" class="btn-primary" type="button" style="width: 100%;">
+            <span>✕ 閉じる</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="mudras.js?v=20261111_store_ready"></script>
+  <script src="audioEngine.js?v=20261111_store_ready"></script>
+  <script src="app.js?v=20261111_store_ready"></script>
 </body>
 </html>

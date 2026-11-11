@@ -582,6 +582,12 @@ function initApp() {
       window.powerNapAudio.stop();
       window.powerNapAudio.startAlarmLoop();
     }
+    const napMin = Math.max(1, Math.round(restDurationSeconds / 60));
+    const step7DescEl = document.getElementById("step7-complete-desc");
+    if (step7DescEl) {
+      step7DescEl.textContent = `${napMin}分間の理想的なパワーナップと3分間の覚醒セッションが完了しました。`;
+    }
+    recordSessionLog("powernap", napMin + 3, audioMode === "earphone" ? "イヤホン" : "スピーカー", `パワーナップ (${napMin}分+覚醒3分)`);
     goToStep(7);
   }
 
@@ -745,6 +751,8 @@ function initApp() {
         if (qpRemainingSeconds <= 0) {
           clearInterval(qpInterval);
           qpInterval = null;
+          const qpMin = Math.max(1, Math.round(qpTotalSeconds / 60));
+          recordSessionLog("sleep", qpMin, "528Hz 潮騒", `おやすみ 528Hz 潮騒 (${qpMin}分)`);
           stopQuickPlayer();
         }
       } else {
@@ -756,6 +764,8 @@ function initApp() {
         if (qpRemainingSeconds <= 0) {
           clearInterval(qpInterval);
           qpInterval = null;
+          const qpMin = Math.max(1, Math.round(qpTotalSeconds / 60));
+          recordSessionLog("awake", qpMin, "40Hz ガンマ波", `朝の覚醒 40Hz (${qpMin}分)`);
           if (qpAlarmCheckbox && qpAlarmCheckbox.checked) {
             // アラーム鳴動
             if (window.powerNapAudio) window.powerNapAudio.startAlarmLoop();
@@ -822,7 +832,201 @@ function initApp() {
     }
   });
 
+  // --- Streak & Session History Logic (LocalStorage Persistence) ---
+  const STORAGE_KEY_HISTORY = "powernap_history_v1";
+  const statsModal = document.getElementById("stats-modal");
+  const btnOpenStats = document.getElementById("btn-open-stats");
+  const btnCloseStats = document.getElementById("btn-close-stats");
+  const btnStatsBottomClose = document.getElementById("btn-stats-bottom-close");
+  const statsBackdrop = document.getElementById("stats-backdrop");
+  const btnClearStats = document.getElementById("btn-clear-stats");
+
+  function getDateKey(dateObj) {
+    const y = dateObj.getFullYear();
+    const m = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+    const d = dateObj.getDate().toString().padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  function loadHistoryLogs() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_HISTORY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveHistoryLogs(logs) {
+    try {
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(logs));
+    } catch (e) {
+      console.warn("Failed to save history logs:", e);
+    }
+  }
+
+  function calculateStreakDays(logs) {
+    if (!logs || logs.length === 0) return 0;
+    const uniqueDateSet = new Set(logs.map(item => item.dateKey));
+    const today = new Date();
+    const todayKey = getDateKey(today);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayKey = getDateKey(yesterday);
+
+    let checkDate = new Date(today);
+    if (!uniqueDateSet.has(todayKey)) {
+      if (uniqueDateSet.has(yesterdayKey)) {
+        checkDate = yesterday;
+      } else {
+        return 0;
+      }
+    }
+
+    let streak = 0;
+    while (true) {
+      const key = getDateKey(checkDate);
+      if (uniqueDateSet.has(key)) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  function renderStatsUI() {
+    const logs = loadHistoryLogs();
+    const totalSessions = logs.length;
+    const totalMinutes = logs.reduce((acc, cur) => acc + (Number(cur.minutes) || 0), 0);
+    const streakDays = calculateStreakDays(logs);
+
+    // STEP 1 Compact Card
+    const statStreakEl = document.getElementById("stat-streak-days");
+    const statSessionsEl = document.getElementById("stat-total-sessions");
+    const statMinutesEl = document.getElementById("stat-total-minutes");
+    if (statStreakEl) statStreakEl.textContent = streakDays;
+    if (statSessionsEl) statSessionsEl.textContent = totalSessions;
+    if (statMinutesEl) statMinutesEl.textContent = totalMinutes;
+
+    // STEP 7 Achievement Card
+    const step7StreakText = document.getElementById("step7-streak-text");
+    const step7Sessions = document.getElementById("step7-total-sessions");
+    const step7Minutes = document.getElementById("step7-total-minutes");
+    if (step7StreakText) step7StreakText.textContent = `${Math.max(1, streakDays)}日連続達成！`;
+    if (step7Sessions) step7Sessions.textContent = totalSessions;
+    if (step7Minutes) step7Minutes.textContent = totalMinutes;
+
+    // Modal Summary
+    const modalStreakEl = document.getElementById("modal-streak-days");
+    const modalSessionsEl = document.getElementById("modal-total-sessions");
+    const modalMinutesEl = document.getElementById("modal-total-minutes");
+    if (modalStreakEl) modalStreakEl.textContent = streakDays;
+    if (modalSessionsEl) modalSessionsEl.textContent = totalSessions;
+    if (modalMinutesEl) modalMinutesEl.textContent = totalMinutes;
+
+    // Weekly 7-Day Stamp Row
+    const weeklyStampRow = document.getElementById("weekly-stamp-row");
+    if (weeklyStampRow) {
+      const uniqueDates = new Set(logs.map(item => item.dateKey));
+      const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+      let html = "";
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = getDateKey(d);
+        const isDone = uniqueDates.has(key);
+        const isToday = i === 0;
+        const dayLabel = isToday ? "今日" : `${d.getMonth() + 1}/${d.getDate()}`;
+        const weekLabel = dayNames[d.getDay()];
+        html += `
+          <div class="stamp-day-col ${isDone ? "done" : ""} ${isToday ? "today" : ""}">
+            <span class="stamp-week-label">${weekLabel}</span>
+            <div class="stamp-circle">${isDone ? "✓" : "・"}</div>
+            <span class="stamp-date-label">${dayLabel}</span>
+          </div>
+        `;
+      }
+      weeklyStampRow.innerHTML = html;
+    }
+
+    // Recent History List
+    const historyListEl = document.getElementById("stats-history-list");
+    if (historyListEl) {
+      if (logs.length === 0) {
+        historyListEl.innerHTML = `<div class="stats-empty-msg">まだセッション履歴がありません。<br>パワーナップを完了するとここに記録されます！</div>`;
+      } else {
+        historyListEl.innerHTML = logs.slice(0, 30).map(item => {
+          const icon = item.type === "sleep" ? "🌙" : item.type === "awake" ? "☀️" : "⚡";
+          return `
+            <div class="history-log-row">
+              <div class="history-log-left">
+                <span class="history-log-icon">${icon}</span>
+                <div>
+                  <div class="history-log-title">${item.label || "パワーナップ"}</div>
+                  <div class="history-log-meta">${item.displayTime} ・ ${item.mode || "スピーカー"}</div>
+                </div>
+              </div>
+              <div class="history-log-badge">+${item.minutes}分</div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+  }
+
+  function recordSessionLog(type, minutes, mode, label) {
+    const now = new Date();
+    const dateKey = getDateKey(now);
+    const displayTime = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+    const logs = loadHistoryLogs();
+    logs.unshift({
+      id: Date.now().toString(),
+      type,
+      minutes,
+      mode,
+      label,
+      dateKey,
+      displayTime
+    });
+    saveHistoryLogs(logs.slice(0, 100));
+    renderStatsUI();
+  }
+
+  function openStatsModal() {
+    renderStatsUI();
+    if (statsModal) {
+      statsModal.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closeStatsModal() {
+    if (statsModal) {
+      statsModal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  }
+
+  if (btnOpenStats) btnOpenStats.addEventListener("click", openStatsModal);
+  if (btnCloseStats) btnCloseStats.addEventListener("click", closeStatsModal);
+  if (btnStatsBottomClose) btnStatsBottomClose.addEventListener("click", closeStatsModal);
+  if (statsBackdrop) statsBackdrop.addEventListener("click", closeStatsModal);
+
+  if (btnClearStats) {
+    btnClearStats.addEventListener("click", () => {
+      if (confirm("これまでの仮眠履歴・連続達成記録をリセットしますか？")) {
+        saveHistoryLogs([]);
+        renderStatsUI();
+      }
+    });
+  }
+
   // 初回プレビュー計算 & 10秒おきの定期再計算（分が変わった場合の自動追従）
+  renderStatsUI();
   updateStep2And3Previews();
   setInterval(updateStep2And3Previews, 10000);
 }
