@@ -147,7 +147,13 @@ function initApp() {
   }
   if (brandLogoEl) {
     brandLogoEl.style.cursor = "pointer";
-    brandLogoEl.addEventListener("click", resetToHome);
+    brandLogoEl.addEventListener("click", () => {
+      if (currentStep === 1) {
+        window.location.href = window.location.pathname + "?v=" + Date.now();
+      } else {
+        resetToHome();
+      }
+    });
   }
 
   // --- Navigation & View Switching ---
