@@ -1113,8 +1113,8 @@ body {
 
 /* Rich Action Buttons Container */
 .btn-container {
-  margin-top: 10px;
-  margin-bottom: calc(var(--safe-bottom) + 4px);
+  margin-top: 6px;
+  margin-bottom: 2px;
   flex-shrink: 0;
   width: 100%;
   position: relative;
@@ -1533,9 +1533,9 @@ body {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.14);
   color: #cbd5e1;
-  padding: 11px 16px;
+  padding: 8px 14px;
   border-radius: var(--radius-md);
-  font-size: 0.85rem;
+  font-size: 0.80rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -1543,7 +1543,7 @@ body {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 6px;
   transition: all 0.2s ease;
 }
 
@@ -1558,8 +1558,8 @@ body {
    ======================================================== */
 
 .quick-sound-section {
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 2px;
+  padding-top: 5px;
   border-top: 1px dashed rgba(255, 255, 255, 0.1);
   width: 100%;
 }
@@ -1569,9 +1569,9 @@ body {
   align-items: center;
   gap: 6px;
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--text-main);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .quick-sound-icon {
@@ -1579,16 +1579,20 @@ body {
 }
 
 .quick-sound-desc {
-  font-size: 0.68rem;
+  font-size: 0.64rem;
   color: var(--text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .quick-sound-card {
   border-radius: var(--radius-md);
-  padding: 7px 10px;
-  margin-bottom: 6px;
+  padding: 5px 8px;
+  margin-bottom: 4px;
   transition: all 0.25s ease;
+}
+
+.quick-sound-card:last-child {
+  margin-bottom: 0;
 }
 
 .quick-sound-card.sleep-card {
@@ -1695,43 +1699,49 @@ body {
 
 /* Step 1 Specific Compact Layout to Ensure All Quick Play Buttons Are Instantly Visible */
 #step-1 .glass-card {
-  justify-content: flex-start;
-  gap: 6px;
-  padding: 10px 14px 12px 14px;
+  justify-content: space-between;
+  gap: 3px;
+  padding: 8px 12px;
+  overflow-y: auto;
 }
 
 #step-1 .step-title {
-  font-size: 1.25rem;
-  margin-bottom: 1px;
+  font-size: 1.18rem;
+  margin-bottom: 0px;
 }
 
 #step-1 .step-subtitle {
-  font-size: 0.78rem;
-  margin-bottom: 2px;
+  font-size: 0.72rem;
+  margin-bottom: 1px;
 }
 
 #step-1 .hero-graphic-box {
-  margin: 1px auto;
+  margin: 2px auto;
 }
 
 #step-1 .coffee-illustration {
-  width: 68px;
-  height: 68px;
+  width: 64px;
+  height: 64px;
 }
 
 #step-1 .hero-mudra-badge {
   width: 56px;
   height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #step-1 .hero-mudra-img {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
 }
 
 #step-1 .splash-aura-glow-inline {
-  width: 90px;
-  height: 90px;
+  width: 96px;
+  height: 96px;
+  margin-top: -48px;
+  margin-left: -48px;
 }
 
 #step-1 .coffee-badge {
@@ -1747,45 +1757,25 @@ body {
 }
 
 #step-1 .auto-start-section {
-  margin: 4px 0 2px 0;
-  padding: 7px 10px;
+  margin: 1px 0;
+  padding: 6px 10px;
 }
 
 #step-1 .auto-start-header {
-  margin-bottom: 5px;
-  font-size: 0.78rem;
+  margin-bottom: 4px;
+  font-size: 0.75rem;
 }
 
 #step-1 .btn-auto-start {
-  padding: 5px 2px;
+  padding: 4px 2px;
 }
 
 #step-1 .auto-time {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 
 #step-1 .info-badge-list {
-  margin-top: 2px;
-  width: 100%;
-}
-
-#step-1 .info-item {
-  padding: 4px 8px;
-  gap: 6px;
-}
-
-#step-1 .info-icon-dot {
-  width: 18px;
-  height: 18px;
-  font-size: 0.68rem;
-}
-
-#step-1 .info-text-group h4 {
-  font-size: 0.76rem;
-}
-
-#step-1 .info-text-group p {
-  font-size: 0.68rem;
+  display: none;
 }
 
 .featured-sleep {
@@ -2143,14 +2133,15 @@ body {
   justify-content: space-between;
   background: linear-gradient(135deg, rgba(0, 229, 255, 0.09) 0%, rgba(124, 77, 255, 0.09) 100%);
   border: 1px solid rgba(0, 229, 255, 0.28);
-  border-radius: 14px;
-  padding: 7px 11px;
-  margin: 2px 0 4px 0;
+  border-radius: 12px;
+  padding: 5px 10px;
+  margin: 1px 0;
   cursor: pointer;
   color: var(--text-main);
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   touch-action: manipulation;
+  flex-shrink: 0;
 }
 
 .streak-summary-card:active {
